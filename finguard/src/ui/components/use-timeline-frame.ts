@@ -5,12 +5,12 @@ import type { RefObject } from "react";
 
 import { clock } from "@/ui/format";
 import { runClock } from "@/ui/run/run-view";
+import { tickMarks, tickStep } from "@/ui/timeline-ticks";
 import type { RunView } from "@/ui/run/run-view";
 
 /** Visible window when following the live edge, in ms. */
 const FOLLOW_SPAN_MS = 14_000;
 const LIVE_EDGE = 0.75;
-const TICK_EVERY_MS = 2_000;
 const MIN_WIDTH = { bar: 3, tick: 5 };
 // Below these widths a label would be cut to a fragment like "1…", so show the short form or nothing.
 const LABEL = { full: 84, short: 56 };
@@ -41,10 +41,11 @@ export function useTimelineFrame(rootRef: RefObject<HTMLDivElement | null>, view
       const start = follow ? Math.max(0, now - span * LIVE_EDGE) : 0;
       const pxPerMs = width / span;
 
-      const key = `${pxPerMs.toFixed(5)}:${Math.ceil((start + span) / TICK_EVERY_MS)}`;
+      const step = tickStep(pxPerMs);
+      const key = `${pxPerMs.toFixed(5)}:${Math.floor(start / step)}:${Math.ceil((start + span) / step)}`;
       if (key !== tickKey) {
         tickKey = key;
-        const marks = Array.from({ length: Math.ceil((start + span) / TICK_EVERY_MS) + 1 }, (_, i) => i * TICK_EVERY_MS);
+        const marks = tickMarks(start, start + span, step);
         const axis = root.querySelector<HTMLElement>('[data-strip="axis"]');
         const grid = root.querySelector<HTMLElement>('[data-strip="grid"]');
         if (axis) axis.innerHTML = marks.map((t) => `<span style="left:${t * pxPerMs}px">${clock(t)}</span>`).join("");
