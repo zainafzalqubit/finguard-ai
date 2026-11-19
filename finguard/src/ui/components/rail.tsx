@@ -2,14 +2,18 @@ import type { ReactElement } from "react";
 
 import { BrandMark, Icon } from "./icon";
 
-/** Only the live audit view exists for the hackathon; the other sections are shown but not yet built. */
+/** Sections shown but not yet built for the hackathon. */
 const SOON = [
   { icon: "invoice-01", label: "Documents" },
   { icon: "flag-02", label: "Findings" },
-  { icon: "clock-01", label: "Past audits" },
 ];
 
-export function Rail(): ReactElement {
+interface RailProps {
+  historyOpen: boolean;
+  onHistory: () => void;
+}
+
+export function Rail({ historyOpen, onHistory }: RailProps): ReactElement {
   return (
     <nav className="rail" aria-label="Main">
       <div className="rail-top"><div className="mark" title="FinGuard"><BrandMark /></div></div>
@@ -19,6 +23,9 @@ export function Rail(): ReactElement {
           <Icon name={item.icon} />
         </button>
       ))}
+      <button className="key flat" title="Past audits" aria-label="Past audits" aria-haspopup="dialog" aria-expanded={historyOpen} onClick={onHistory}>
+        <Icon name="clock-01" />
+      </button>
       <div className="spacer" />
       <button className="key flat" title="Rules (coming soon)" aria-disabled="true" disabled><Icon name="sliders-horizontal" /></button>
     </nav>

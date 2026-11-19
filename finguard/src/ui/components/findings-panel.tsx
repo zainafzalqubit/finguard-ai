@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 
-import type { Severity } from "@/domain/types";
+import type { Finding, Severity } from "@/domain/types";
 import { plural } from "@/ui/format";
 import type { RunView } from "@/ui/run/run-view";
 
@@ -17,6 +17,8 @@ interface PanelProps {
   view: RunView;
   /** Bumped by the timeline or activity feed to open a finding; the nonce lets the same finding reopen. */
   focus: { id: string; nonce: number } | null;
+  /** Opens the invoice a finding is about. */
+  onPreview: (finding: Finding) => void;
 }
 
 const toggled = (set: Set<string>, id: string): Set<string> => {
@@ -42,7 +44,7 @@ function Outcome({ icon, title, refs, note, warn = false }: OutcomeProps): React
 }
 
 /** Keyed by run id in the dashboard, so a new run starts with a clean panel. */
-export function FindingsPanel({ view, focus }: PanelProps): ReactElement {
+export function FindingsPanel({ view, focus, onPreview }: PanelProps): ReactElement {
   const [filter, setFilter] = useState<Filter>("all");
   const [open, setOpen] = useState<Set<string>>(new Set());
   const [reviewed, setReviewed] = useState<Set<string>>(new Set());
@@ -86,7 +88,7 @@ export function FindingsPanel({ view, focus }: PanelProps): ReactElement {
         )}
         {shown.map((finding) => (
           <FindingItem key={finding.id} finding={finding} open={open.has(finding.id)} reviewed={reviewed.has(finding.id)}
-            onToggle={() => setOpen((s) => toggled(s, finding.id))} onReview={() => setReviewed((s) => toggled(s, finding.id))} />
+            onToggle={() => setOpen((s) => toggled(s, finding.id))} onReview={() => setReviewed((s) => toggled(s, finding.id))} onPreview={() => onPreview(finding)} />
         ))}
       </div>
       {view.status === "completed" && (view.passed.length > 0 || view.incomplete.length > 0) && (

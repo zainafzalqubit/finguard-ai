@@ -15,9 +15,10 @@ interface FindingItemProps {
   reviewed: boolean;
   onToggle: () => void;
   onReview: () => void;
+  onPreview: () => void;
 }
 
-export function FindingItem({ finding, open, reviewed, onToggle, onReview }: FindingItemProps): ReactElement {
+export function FindingItem({ finding, open, reviewed, onToggle, onReview, onPreview }: FindingItemProps): ReactElement {
   return (
     <article id={`finding-${finding.id}`} className={`finding ${open ? "open" : ""} ${reviewed ? "reviewed" : ""}`} style={severityColor(finding.severity)}>
       <button className="finding-head" aria-expanded={open} onClick={onToggle}>
@@ -50,6 +51,7 @@ export function FindingItem({ finding, open, reviewed, onToggle, onReview }: Fin
             </div>
             <div className="finding-actions">
               <button className="key small" aria-pressed={reviewed} onClick={onReview}><Icon name="tick-02" />{reviewed ? "Reviewed" : "Mark reviewed"}</button>
+              <button className="key small flat" onClick={onPreview}><Icon name="view" />View invoice</button>
             </div>
           </div>
         </div>

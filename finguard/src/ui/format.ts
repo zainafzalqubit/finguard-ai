@@ -16,4 +16,15 @@ export function fileSize(bytes: number): string {
 /** Sets --sev, which flags, finding icons and "found" values read their colour from. */
 export const severityColor = (severity: Severity | "ok"): CSSProperties => ({ "--sev": `var(--${severity})` }) as CSSProperties;
 
+const TIME = new Intl.DateTimeFormat(undefined, { hour: "numeric", minute: "2-digit" });
+const DAY = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric" });
+
+/** "Today, 4:37 PM", "Yesterday, 9:02 AM" or "Nov 12, 4:37 PM". */
+export function when(epochMs: number, now = Date.now()): string {
+  const dayOf = (ms: number): number => Math.floor((ms - new Date(ms).getTimezoneOffset() * 60_000) / 86_400_000);
+  const daysAgo = dayOf(now) - dayOf(epochMs);
+  const day = daysAgo === 0 ? "Today" : daysAgo === 1 ? "Yesterday" : DAY.format(epochMs);
+  return `${day}, ${TIME.format(epochMs)}`;
+}
+
 export const plural = (n: number, one: string, many = `${one}s`): string => `${n} ${n === 1 ? one : many}`;

@@ -1,7 +1,7 @@
 import { connection } from "next/server";
 
 import { runAudit } from "@/audit/run-audit";
-import { listRuns } from "@/audit/run-db";
+import { listRuns, saveFiles } from "@/audit/run-db";
 import { createRun } from "@/audit/run-store";
 import { UploadError, loadUpload } from "@/ingest/load-upload";
 import type { UploadedFile } from "@/ingest/load-upload";
@@ -22,8 +22,15 @@ async function filesFrom(form: FormData): Promise<UploadedFile[]> {
 export async function POST(request: Request): Promise<Response> {
   try {
     const form = await request.formData();
-    const input = await loadUpload(await filesFrom(form));
+    const files = await filesFrom(form);
+    const input = await loadUpload(files);
     const runId = createRun();
+    try {
+      saveFiles(runId, files);
+    } catch (error) {
+      // The audit does not need the stored copies; only invoice previews would be missing.
+      console.error(`Could not save files for run ${runId}:`, error);
+    }
     const provider = form.get("provider");
     runAudit(runId, input, typeof provider === "string" ? provider : null).catch((error: unknown) => console.error(`Audit ${runId} crashed:`, error));
     return Response.json({ runId }, { status: 202 });

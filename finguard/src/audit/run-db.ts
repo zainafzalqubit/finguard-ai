@@ -4,17 +4,7 @@ import { DatabaseSync } from "node:sqlite";
 
 import { TERMINAL_EVENTS } from "@/domain/events";
 import type { RunEvent } from "@/domain/events";
-
-export type RunStatus = "running" | "completed" | "failed";
-
-export interface RunSummary {
-  id: string;
-  createdAt: number;
-  status: RunStatus;
-  model: string | null;
-  invoices: number;
-  findings: number;
-}
+import type { RunStatus, RunSummary } from "@/domain/run-summary";
 
 interface RunRow {
   id: string;
@@ -44,17 +34,32 @@ const SCHEMA = `
     body TEXT NOT NULL,
     PRIMARY KEY (run_id, seq)
   );
+  CREATE TABLE IF NOT EXISTS files (
+    run_id TEXT NOT NULL REFERENCES runs(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    bytes BLOB NOT NULL,
+    PRIMARY KEY (run_id, name)
+  );
 `;
 
 // One connection per server process, kept on globalThis so Next.js hot reload reuses it.
 const globalDb = globalThis as typeof globalThis & { __finguardDb?: DatabaseSync };
 
+// Reset on every module load, so a hot reload with a changed SCHEMA still applies it to the reused connection.
+let schemaApplied = false;
+
 function db(): DatabaseSync {
-  if (globalDb.__finguardDb) return globalDb.__finguardDb;
+  const cached = globalDb.__finguardDb;
+  if (cached) {
+    if (!schemaApplied) cached.exec(SCHEMA);
+    schemaApplied = true;
+    return cached;
+  }
   mkdirSync(dirname(DB_PATH), { recursive: true });
   const conn = new DatabaseSync(DB_PATH);
   conn.exec("PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;");
   conn.exec(SCHEMA);
+  schemaApplied = true;
   globalDb.__finguardDb = conn;
   closeInterrupted(conn);
   return conn;
@@ -94,4 +99,15 @@ export function loadEvents(runId: string): RunEvent[] {
 export function listRuns(limit: number): RunSummary[] {
   const rows = db().prepare("SELECT id, created_at, status, model, invoices, findings FROM runs ORDER BY created_at DESC LIMIT ?").all(limit) as unknown as RunRow[];
   return rows.map((row) => ({ id: row.id, createdAt: row.created_at, status: row.status, model: row.model, invoices: row.invoices, findings: row.findings }));
+}
+
+/** Keeps the files an audit read, so its invoices can be previewed later. */
+export function saveFiles(runId: string, files: { name: string; bytes: Uint8Array }[]): void {
+  const insert = db().prepare("INSERT OR REPLACE INTO files (run_id, name, bytes) VALUES (?, ?, ?)");
+  for (const file of files) insert.run(runId, file.name, file.bytes);
+}
+
+export function loadFile(runId: string, name: string): Uint8Array | null {
+  const row = db().prepare("SELECT bytes FROM files WHERE run_id = ? AND name = ?").get(runId, name) as unknown as { bytes: Uint8Array } | undefined;
+  return row?.bytes ?? null;
 }

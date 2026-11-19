@@ -31,3 +31,26 @@
 .sheet-foot .hint.error { color: var(--high); }
 /* Full model name under the provider switch */
 .model-name { margin-top: 6px; padding-left: 2px; font-size: var(--fs-s); color: var(--text-3); }
+
+/* Past audits: same row material as the upload file list */
+.history { display: grid; gap: 1px; padding: 0; list-style: none; }
+.history li { animation: row-in 0.3s var(--ease) both; animation-delay: calc(min(var(--i, 0), 12) * 25ms); }
+.history button { width: 100%; display: flex; align-items: center; gap: 12px; padding: 8px 10px; border: 0; border-radius: var(--r-m); text-align: left; color: var(--text); background: transparent; cursor: pointer; transition: background var(--fast) var(--ease); }
+.history button:hover { background: var(--raised); }
+.history button[aria-current] { background: var(--well); box-shadow: var(--deboss); }
+.history button:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.55); outline-offset: -2px; }
+.history .name { display: block; font-weight: var(--fw-strong); line-height: 1.3; }
+.history .sub { display: flex; gap: 10px; font-size: var(--fs-s); line-height: 1.35; color: var(--text-3); }
+.history button > .hi { color: var(--text-3); }
+.history-led { width: 8px; height: 8px; flex: none; border-radius: 50%; background: var(--led); box-shadow: 0 0 0 3px color-mix(in oklab, var(--led) 16%, transparent); }
+.history-tag { font-size: var(--fs-s); color: var(--text-3); }
+.history-empty { padding: 16px 4px; font-size: var(--fs-s); color: var(--text-3); }
+.history-empty.error { color: var(--high); }
+
+/* Invoice preview: wider sheet, the PDF sits in a recessed well */
+.sheet.preview { width: min(880px, calc(100vw - 32px)); height: calc(100vh - 48px); }
+.sheet-head h2:empty::before { content: "\00a0"; }
+.preview-actions { display: flex; align-items: center; gap: 4px; }
+.preview-actions a.key { text-decoration: none; }
+.sheet-body.preview-body { flex: 1; min-height: 0; display: flex; padding: 12px; }
+.preview-frame { flex: 1; width: 100%; border: 0; border-radius: var(--r-l); background: var(--well); box-shadow: var(--deboss); }

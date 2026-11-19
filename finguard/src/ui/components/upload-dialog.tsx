@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 
 import { FILE_KINDS, KIND_ORDER, kindMeta } from "@/domain/file-kinds";
@@ -11,6 +11,7 @@ import type { UploadPhase } from "@/ui/upload-progress";
 import { Icon } from "./icon";
 import { UploadFileList } from "./upload-file-list";
 import { UploadFolder } from "./upload-folder";
+import { useModal } from "./use-modal";
 import { useModelOptions } from "./use-model-options";
 import { useUploadFiles } from "./use-upload-files";
 
@@ -26,23 +27,12 @@ const SENT_HOLD_MS = 700;
 const START_LABEL: Record<UploadPhase["step"], string> = { idle: "Start audit", sending: "Uploading…", sent: "Starting…", failed: "Retry upload" };
 
 export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDialogProps): ReactElement {
-  const dialogRef = useRef<HTMLDialogElement>(null);
+  const dialogRef = useModal(open);
   const upload = useUploadFiles();
   const modelChoice = useModelOptions(open);
   const [phase, setPhase] = useState<UploadPhase>(UPLOAD_IDLE);
   const [error, setError] = useState<string | null>(null);
   const { loadSample } = upload;
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (open && !dialog.open) {
-      dialog.showModal();
-      // Focus the body, not the close button, so no focus ring shows until the person tabs.
-      dialog.querySelector<HTMLElement>(".sheet-body")?.focus();
-    }
-    if (!open && dialog.open) dialog.close();
-  }, [open]);
 
   useEffect(() => {
     if (open && preferSample) void loadSample().then(setError);

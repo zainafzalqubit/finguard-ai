@@ -1,8 +1,8 @@
 import {
   Activity01Icon, Add01Icon, AlertCircleIcon, AlertDiamondIcon, ArrowDataTransferHorizontalIcon, ArrowDown01Icon,
   ArrowRight01Icon, BankIcon, BookOpen01Icon, Cancel01Icon, CheckmarkCircle02Icon, Clock01Icon, Csv01Icon,
-  Database01Icon, Flag02Icon, Invoice01Icon, Maximize01Icon, Pdf01Icon, Radar01Icon, RulerIcon, SearchList01Icon,
-  SidebarLeftIcon, SlidersHorizontalIcon, Target02Icon, Task01Icon, Tick02Icon, Upload04Icon, UserGroupIcon,
+  Database01Icon, Flag02Icon, Invoice01Icon, LinkSquare02Icon, Maximize01Icon, Pdf01Icon, Radar01Icon, RulerIcon, SearchList01Icon,
+  SidebarLeftIcon, SlidersHorizontalIcon, Target02Icon, Task01Icon, Tick02Icon, Upload04Icon, UserGroupIcon, ViewIcon,
 } from "@hugeicons/core-free-icons";
 import { HugeiconsIcon } from "@hugeicons/react";
 import type { IconSvgElement } from "@hugeicons/react";
@@ -14,9 +14,10 @@ const ICONS = {
   "arrow-data-transfer-horizontal": ArrowDataTransferHorizontalIcon, "arrow-down-01": ArrowDown01Icon, "arrow-right-01": ArrowRight01Icon,
   bank: BankIcon, "book-open-01": BookOpen01Icon, "cancel-01": Cancel01Icon, "checkmark-circle-02": CheckmarkCircle02Icon,
   "clock-01": Clock01Icon, "csv-01": Csv01Icon, "database-01": Database01Icon, "flag-02": Flag02Icon, "invoice-01": Invoice01Icon,
+  "link-square-02": LinkSquare02Icon,
   "maximize-01": Maximize01Icon, "pdf-01": Pdf01Icon, "radar-01": Radar01Icon, ruler: RulerIcon, "search-list-01": SearchList01Icon,
   "sidebar-left": SidebarLeftIcon, "sliders-horizontal": SlidersHorizontalIcon, "target-02": Target02Icon, "task-01": Task01Icon,
-  "tick-02": Tick02Icon, "upload-04": Upload04Icon, "user-group": UserGroupIcon,
+  "tick-02": Tick02Icon, "upload-04": Upload04Icon, "user-group": UserGroupIcon, view: ViewIcon,
 } satisfies Record<string, IconSvgElement>;
 
 export type IconName = keyof typeof ICONS;
