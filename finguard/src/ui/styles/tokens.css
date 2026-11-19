@@ -2,12 +2,12 @@
 /* Tokens: single source of truth, later moved to tokens.css + DESIGN.md */
 :root {
   /* Neutral gray surfaces, darkest to lightest */
-  --well: #101010;
-  --window: #141414;
-  --surface: #191919;
-  --raised: #222222;
-  --raised-hi: #2a2a2a;
-  --raised-top: #313131;
+  --well: #0c0c0c;
+  --window: #101010;
+  --surface: #151515;
+  --raised: #1e1e1e;
+  --raised-hi: #262626;
+  --raised-top: #2d2d2d;
   --led-off: #3d3d3d;
   --divider: rgba(255, 255, 255, 0.06);
 
