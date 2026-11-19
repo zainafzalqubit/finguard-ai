@@ -60,7 +60,7 @@ export function Dashboard(): ReactElement {
         </section>
         <Dock follow={following} onFollow={setFollow} />
         <FindingsPanel key={view.runId ?? "none"} view={view} focus={focus}
-          onPreview={(f) => view.runId && setPreview({ runId: view.runId, fileName: f.documentId, caption: `${f.invoiceNumber}: ${f.title}` })} />
+          onPreview={(fileName, caption) => view.runId && setPreview({ runId: view.runId, fileName, caption })} />
       </main>
       <UploadDialog open={dialog.open} preferSample={dialog.sample} onClose={() => setDialog({ open: false, sample: false })} onStart={startAudit} />
       <HistoryDialog open={historyOpen} currentRunId={view.runId} onClose={() => setHistoryOpen(false)} onOpenRun={openRun} />

@@ -3,8 +3,10 @@
 import { useEffect, useState } from "react";
 import type { ReactElement } from "react";
 
-import type { Finding, Severity } from "@/domain/types";
+import type { Severity } from "@/domain/types";
 import { plural } from "@/ui/format";
+import { incompleteDocuments, passedDocuments } from "@/ui/run/derive";
+import type { DocRef } from "@/ui/run/derive";
 import type { RunView } from "@/ui/run/run-view";
 
 import { FindingItem } from "./finding-item";
@@ -17,8 +19,8 @@ interface PanelProps {
   view: RunView;
   /** Bumped by the timeline or activity feed to open a finding; the nonce lets the same finding reopen. */
   focus: { id: string; nonce: number } | null;
-  /** Opens the invoice a finding is about. */
-  onPreview: (finding: Finding) => void;
+  /** Opens an invoice file; the caption says why it is shown. */
+  onPreview: (documentId: string, caption: string) => void;
 }
 
 const toggled = (set: Set<string>, id: string): Set<string> => {
@@ -28,16 +30,23 @@ const toggled = (set: Set<string>, id: string): Set<string> => {
   return next;
 };
 
-interface OutcomeProps { icon: string; title: string; refs: string[]; note?: string; warn?: boolean }
+interface OutcomeProps { icon: string; title: string; refs: DocRef[]; note?: string; warn?: boolean; onOpen: (ref: DocRef & { documentId: string }) => void }
 
-function Outcome({ icon, title, refs, note, warn = false }: OutcomeProps): ReactElement {
+function Outcome({ icon, title, refs, note, warn = false, onOpen }: OutcomeProps): ReactElement {
   return (
     <div className={`passed ${warn ? "warn" : ""}`.trim()}>
       <span className="sev-icon"><Icon name={icon} /></span>
       <div>
         <strong>{title}</strong>
         {note && <div>{note}</div>}
-        <div className="refs">{refs.map((ref, i) => <span key={`${ref}-${i}`}>{ref}</span>)}</div>
+        <div className="refs">
+          {refs.map((ref, i) => {
+            const { documentId } = ref;
+            return documentId
+              ? <button key={documentId} title={`Preview ${documentId}`} onClick={() => onOpen({ ...ref, documentId })}>{ref.label}</button>
+              : <span key={`${ref.label}-${i}`}>{ref.label}</span>;
+          })}
+        </div>
       </div>
     </div>
   );
@@ -88,16 +97,17 @@ export function FindingsPanel({ view, focus, onPreview }: PanelProps): ReactElem
         )}
         {shown.map((finding) => (
           <FindingItem key={finding.id} finding={finding} open={open.has(finding.id)} reviewed={reviewed.has(finding.id)}
-            onToggle={() => setOpen((s) => toggled(s, finding.id))} onReview={() => setReviewed((s) => toggled(s, finding.id))} onPreview={() => onPreview(finding)} />
+            onToggle={() => setOpen((s) => toggled(s, finding.id))} onReview={() => setReviewed((s) => toggled(s, finding.id))} onPreview={() => onPreview(finding.documentId, `${finding.invoiceNumber}: ${finding.title}`)} />
         ))}
       </div>
       {view.status === "completed" && (view.passed.length > 0 || view.incomplete.length > 0) && (
         <div className="outcomes">
           {view.incomplete.length > 0 && (
-            <Outcome warn icon="alert-circle" title={`${plural(view.incomplete.length, "invoice")} not fully checked`} refs={view.incomplete}
-              note="A check could not finish (see Activity). Run the audit again before relying on these." />
+            <Outcome warn icon="alert-circle" title={`${plural(view.incomplete.length, "invoice")} not fully checked`} refs={incompleteDocuments(view)}
+              onOpen={(ref) => onPreview(ref.documentId, `${ref.label}: not fully checked`)} note="A check could not finish (see Activity). Run the audit again before relying on these." />
           )}
-          {view.passed.length > 0 && <Outcome icon="checkmark-circle-02" title={`${plural(view.passed.length, "invoice")} passed every check`} refs={view.passed} />}
+          {view.passed.length > 0 && <Outcome icon="checkmark-circle-02" title={`${plural(view.passed.length, "invoice")} passed every check`}
+            refs={passedDocuments(view)} onOpen={(ref) => onPreview(ref.documentId, `${ref.label}: passed every check`)} />}
         </div>
       )}
     </aside>

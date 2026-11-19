@@ -58,4 +58,8 @@
 .outcomes { display: grid; gap: 6px; margin: 0 8px 8px; }
 .outcomes .passed { margin: 0; }
 .refs { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.refs span { padding: 0 7px; border-radius: var(--r-xs); font-size: var(--fs-s); line-height: 20px; color: var(--text-2); background: var(--well); box-shadow: var(--deboss); }
+.refs span, .refs button { padding: 0 7px; border-radius: var(--r-xs); font-size: var(--fs-s); line-height: 20px; color: var(--text-2); background: var(--well); box-shadow: var(--deboss); }
+/* Chips that open their invoice: same chip, plus a hover lift and a focus ring */
+.refs button { letter-spacing: inherit; cursor: pointer; transition: color var(--fast) var(--ease), background var(--fast) var(--ease); }
+.refs button:hover { color: var(--text); background: var(--raised); box-shadow: var(--emboss-inset); }
+.refs button:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.55); outline-offset: 1px; }

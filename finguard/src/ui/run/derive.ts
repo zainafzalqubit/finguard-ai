@@ -53,3 +53,18 @@ export function findingForTask(view: RunView, task: TaskBar): Finding | undefine
   return view.findings.find((f) => f.raisedBy === task.agent && f.documentId === task.documentId)
     ?? (task.documentId === "all" ? view.findings.find((f) => f.raisedBy === task.agent && f.ruleId === "UNPAID_INVOICE") : undefined);
 }
+
+/** A chip that can open the file it names. documentId is null when the file is not known. */
+export interface DocRef { label: string; documentId: string | null }
+
+/** Passed invoice numbers mapped back to their files: the file with that number and no findings, as the server decides "passed". */
+export function passedDocuments(view: RunView): DocRef[] {
+  const flagged = new Set(view.findings.map((f) => f.documentId));
+  const ids = Object.keys(view.extracted);
+  return view.passed.map((number) => ({ label: number, documentId: ids.find((id) => view.extracted[id] === number && !flagged.has(id)) ?? null }));
+}
+
+/** Unfinished documents arrive as file names; label them by invoice number when it was read. */
+export function incompleteDocuments(view: RunView): DocRef[] {
+  return view.incomplete.map((id) => ({ label: view.extracted[id] ?? id, documentId: id }));
+}
