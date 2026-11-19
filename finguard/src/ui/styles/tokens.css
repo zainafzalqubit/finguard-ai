@@ -62,7 +62,7 @@
   /* Bold text stays at regular weight by design */
   --fw-strong: 400;
   /* Headings and titles: a touch heavier than body so the page has a clear top level */
-  --fw-heading: 550;
+  --fw-heading: 600;
   --fs-s: 13px;
   --fs-m: 13.5px;
   --fs-l: 15px;
