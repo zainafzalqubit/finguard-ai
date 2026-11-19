@@ -2,7 +2,7 @@ import { connection } from "next/server";
 
 import { agentRuntime } from "@/agents/module";
 
-/** Model choices for the upload dialog: providers with a key set, plus Offline. Never returns a key. */
+/** Model choices for the upload dialog: providers with a key set, plus Demo mode. Never returns a key. */
 export async function GET(): Promise<Response> {
   await connection();
   try {

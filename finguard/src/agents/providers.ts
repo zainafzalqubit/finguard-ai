@@ -27,12 +27,15 @@ interface ProviderSpec {
  *   3.5-flash were queued for minutes on the free tier (19 Nov 2026).
  * - OpenRouter free models allow ~50 requests/day without credits; one audit needs ~60, so it is second.
  */
+/** The id stays "offline" so existing FINGUARD_PROVIDER settings keep working; people see "Demo mode". */
+const DEMO_LABEL = "Demo mode: scripted agents, no AI or API key";
+
 export const PROVIDERS: ProviderSpec[] = [
   { id: "gemini", label: "Gemini", keyEnv: "GEMINI_API_KEY", modelEnv: "GEMINI_MODEL", defaultModel: "gemini-3.5-flash-lite", register: geminiModel },
   { id: "openrouter", label: "OpenRouter", keyEnv: "OPENROUTER_API_KEY", modelEnv: "OPENROUTER_MODEL", defaultModel: "baidu/ernie-5.5-flash-preview:free", register: openRouterModel },
   { id: "anthropic", label: "Anthropic", keyEnv: "ANTHROPIC_API_KEY", modelEnv: "ANTHROPIC_MODEL", defaultModel: "claude-haiku-4-5" },
   { id: "openai", label: "OpenAI", keyEnv: "OPENAI_API_KEY", modelEnv: "OPENAI_MODEL", defaultModel: "gpt-5.4-mini" },
-  { id: "offline", label: "Offline", keyEnv: null, modelEnv: null, defaultModel: MOCK_MODEL_NAME },
+  { id: "offline", label: "Demo mode", keyEnv: null, modelEnv: null, defaultModel: MOCK_MODEL_NAME },
 ];
 
 export interface ProviderSetup {
@@ -48,7 +51,7 @@ export type ModelEnv = Readonly<Record<string, string | undefined>>;
 const isProviderId = (value: string | undefined): value is ProviderId => PROVIDERS.some((p) => p.id === value);
 
 /**
- * Offers every provider whose key is set, plus Offline. The default is FINGUARD_PROVIDER when it is
+ * Offers every provider whose key is set, plus Demo mode. The default is FINGUARD_PROVIDER when it is
  * available, otherwise the first available provider in PROVIDERS order.
  */
 export function providerSetup(env: ModelEnv = process.env): ProviderSetup {
@@ -60,7 +63,7 @@ export function providerSetup(env: ModelEnv = process.env): ProviderSetup {
     if (spec.keyEnv && !key) continue;
     const model = (spec.modelEnv && env[spec.modelEnv]) || spec.defaultModel;
     if (spec.register && key) registered.push(spec.register(model, key));
-    options.push({ provider: spec.id, label: spec.id === "offline" ? "Offline: built-in model, no API key" : `${spec.label}: ${model}`, model });
+    options.push({ provider: spec.id, label: spec.id === "offline" ? DEMO_LABEL : `${spec.label}: ${model}`, model });
   }
   const wanted = env["FINGUARD_PROVIDER"];
   const defaultProvider = isProviderId(wanted) && options.some((o) => o.provider === wanted) ? wanted : (options[0]?.provider ?? "offline");

@@ -19,7 +19,7 @@ pnpm dev
 Open http://localhost:3000, click **New audit**, then **Use sample data**, then **Start audit**.
 Or open http://localhost:3000/?audit=sample to start the sample audit straight away.
 
-It runs offline by default with a built-in model.
+Without a key it runs in Demo mode: the same agents, goals and tools, driven by a scripted stand-in instead of an AI model, with no network calls.
 To use a real model, copy `.env.example` to `.env.local`, add a key, then restart `pnpm dev`.
 Every provider with a key appears in the **Model** switch of the New audit dialog, so you can change model per audit.
 Defaults are free models:
@@ -28,7 +28,7 @@ Defaults are free models:
 | --- | --- | --- | --- |
 | Gemini | `GEMINI_API_KEY` | `gemini-3.5-flash-lite` | Free tier, 15 requests/min; sample audit ~3.5 min |
 | OpenRouter | `OPENROUTER_API_KEY` | `baidu/ernie-5.5-flash-preview:free` | ~50 free requests/day without credits |
-| Offline | none | built-in | Same goals and tools, no network |
+| Demo mode | none | scripted | Same goals and tools, no AI, no network (`FINGUARD_PROVIDER=offline`) |
 
 Change a model with `GEMINI_MODEL` / `OPENROUTER_MODEL`, and the preselected provider with `FINGUARD_PROVIDER`.
 Rate limits are retried automatically (waiting as long as the provider asks); daily caps stop with a clear message,
