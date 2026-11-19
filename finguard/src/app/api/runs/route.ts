@@ -1,10 +1,14 @@
+import { connection } from "next/server";
+
 import { runAudit } from "@/audit/run-audit";
+import { listRuns } from "@/audit/run-db";
 import { createRun } from "@/audit/run-store";
 import { UploadError, loadUpload } from "@/ingest/load-upload";
 import type { UploadedFile } from "@/ingest/load-upload";
 import { readSampleFiles } from "@/samples/sample-files";
 
 const MAX_UPLOAD_BYTES = 25 * 1024 * 1024;
+const RUN_LIST_LIMIT = 30;
 
 async function filesFrom(form: FormData): Promise<UploadedFile[]> {
   if (form.get("sample") === "1") return readSampleFiles();
@@ -27,5 +31,16 @@ export async function POST(request: Request): Promise<Response> {
     if (error instanceof UploadError) return Response.json({ error: error.message }, { status: 400 });
     console.error("Could not start audit:", error);
     return Response.json({ error: "Could not start the audit. Check the server log." }, { status: 500 });
+  }
+}
+
+/** Saved runs, newest first, so the page can reopen the last audit after a refresh. */
+export async function GET(): Promise<Response> {
+  await connection();
+  try {
+    return Response.json({ runs: listRuns(RUN_LIST_LIMIT) });
+  } catch (error) {
+    console.error("Could not read saved runs:", error);
+    return Response.json({ error: "Could not read saved audits." }, { status: 500 });
   }
 }

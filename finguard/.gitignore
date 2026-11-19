@@ -40,3 +40,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local audit database (runs and their event logs)
+/data/*.db
+/data/*.db-*

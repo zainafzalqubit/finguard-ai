@@ -6,29 +6,37 @@ import type { RunEvent } from "@/domain/events";
 
 import { postForm } from "./post-form";
 import { EMPTY_RUN, runReducer } from "./run-view";
+import { rememberRun } from "./saved-runs";
 import type { RunView } from "./run-view";
 
 export interface RunControls {
   view: RunView;
   /** Starts an audit. Resolves to an error message the dialog can show, or null on success. */
   startAudit: (form: FormData, onProgress?: (fraction: number) => void) => Promise<string | null>;
+  /** Shows a saved or running audit; the server replays its events from the start. */
+  openRun: (runId: string) => void;
 }
 
 export function useRun(): RunControls {
   const [view, dispatch] = useReducer(runReducer, EMPTY_RUN);
   const lastSeq = useRef(-1);
 
+  const openRun = useCallback((runId: string) => {
+    dispatch({ type: "start", runId });
+    rememberRun(runId);
+  }, []);
+
   const startAudit = useCallback(async (form: FormData, onProgress?: (fraction: number) => void): Promise<string | null> => {
     try {
       const { ok, body } = await postForm("/api/runs", form, onProgress);
       const reply = body as { runId?: string; error?: string } | null;
       if (!ok || !reply?.runId) return reply?.error ?? "The audit could not start.";
-      dispatch({ type: "start", runId: reply.runId });
+      openRun(reply.runId);
       return null;
     } catch {
       return "Could not reach the FinGuard server. Is pnpm dev running?";
     }
-  }, []);
+  }, [openRun]);
 
   // Follow the run's event stream; the server replays past events first, so a reconnect loses nothing.
   useEffect(() => {
@@ -49,5 +57,5 @@ export function useRun(): RunControls {
     return () => source.close();
   }, [view.runId]);
 
-  return { view, startAudit };
+  return { view, startAudit, openRun };
 }

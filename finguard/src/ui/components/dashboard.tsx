@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import type { ReactElement } from "react";
 
+import { latestRunId, runFromUrl } from "@/ui/run/saved-runs";
 import { useRun } from "@/ui/run/use-run";
 
 import { ActivityFeed } from "./activity-feed";
@@ -18,18 +19,23 @@ import { UploadDialog } from "./upload-dialog";
 interface DialogState { open: boolean; sample: boolean }
 
 export function Dashboard(): ReactElement {
-  const { view, startAudit } = useRun();
+  const { view, startAudit, openRun } = useRun();
   const [dialog, setDialog] = useState<DialogState>({ open: false, sample: false });
   const [follow, setFollow] = useState(true);
   const [focus, setFocus] = useState<{ id: string; nonce: number } | null>(null);
 
-  // `/?audit=sample` starts a sample audit on load: handy for demos and the recorded video.
+  // On load: `/?audit=sample` starts a sample audit (handy for demos); otherwise reopen the run in the URL, or the newest saved one.
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).get("audit") !== "sample") return;
-    const form = new FormData();
-    form.set("sample", "1");
-    void startAudit(form);
-  }, [startAudit]);
+    if (new URLSearchParams(window.location.search).get("audit") === "sample") {
+      const form = new FormData();
+      form.set("sample", "1");
+      void startAudit(form);
+      return;
+    }
+    const fromUrl = runFromUrl();
+    if (fromUrl) openRun(fromUrl);
+    else void latestRunId().then((id) => id && openRun(id));
+  }, [startAudit, openRun]);
 
   const openFinding = useCallback((id: string) => setFocus((current) => ({ id, nonce: (current?.nonce ?? 0) + 1 })), []);
   const openUpload = useCallback((sample: boolean) => setDialog({ open: true, sample }), []);
