@@ -1,0 +1,22 @@
+{
+  "name": "finguard-mozaik-spike",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Throwaway prep spike: three Mozaik 5 agents running concurrently over shared audit state.",
+  "type": "module",
+  "scripts": {
+    "spike": "node --env-file-if-exists=.env src/main.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "packageManager": "pnpm@10.5.2",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@mozaik-ai/core": "5.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.6",
+    "typescript": "^7.0.2"
+  }
+}

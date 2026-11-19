@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Secrets: only the example file is committed
+.env
+.env.*
+!.env.example
+
+# Build and tool output
+.next/
+dist/
+coverage/
+*.tsbuildinfo
+
+# OS and editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

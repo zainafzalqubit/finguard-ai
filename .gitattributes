@@ -1,0 +1,5 @@
+# Keep LF in the repo and on disk so diffs stay clean across Windows and Linux (Vercel/CI)
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.ico binary
