@@ -11,7 +11,8 @@ import "@/ui/styles/dialog.css";
 import "@/ui/styles/folder.css";
 
 // Self-hosted at build time; the design uses regular weight only.
-const inter = Inter({ subsets: ["latin"], weight: "400", variable: "--font-inter", display: "swap" });
+// Variable font: one file with every weight, so headings get a real semibold instead of a faked one.
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 
 export const metadata: Metadata = {
   title: "FinGuard Audit",

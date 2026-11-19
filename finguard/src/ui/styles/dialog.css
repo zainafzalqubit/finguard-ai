@@ -6,7 +6,7 @@
 @keyframes sheet-in { from { opacity: 0; transform: translateY(8px) scale(0.985); } }
 @keyframes fade-in { from { opacity: 0; } }
 .sheet-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 16px 12px 0 20px; }
-.sheet-head h2 { font-size: var(--fs-xl); font-weight: var(--fw-strong); }
+.sheet-head h2 { font-size: var(--fs-xl); font-weight: var(--fw-heading); }
 .sheet-head p { margin-top: 2px; font-size: var(--fs-s); color: var(--text-3); }
 .sheet-body:focus { outline: none; }
 .sheet-body { display: grid; gap: 16px; padding: 16px 20px 20px; overflow-y: auto; }
@@ -14,7 +14,7 @@
 .drop strong { font-weight: var(--fw-strong); }
 .drop .sub { max-width: 40ch; font-size: var(--fs-s); color: var(--text-3); }
 .sheet-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
-.sheet-label h3 { font-size: var(--fs-s); font-weight: var(--fw-strong); color: var(--text-3); }
+.sheet-label h3 { font-size: var(--fs-s); font-weight: var(--fw-heading); color: var(--text-3); }
 .kinds, .files { display: grid; gap: 1px; padding: 0; list-style: none; }
 .kinds li, .files li { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: var(--r-m); transition: background var(--fast) var(--ease); }
 .files li:hover { background: var(--raised); }

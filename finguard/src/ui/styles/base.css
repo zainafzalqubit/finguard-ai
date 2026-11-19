@@ -10,7 +10,8 @@ body {
   background: var(--window);
   overflow: hidden;
 }
-h1, h2, h3, b, strong { font-weight: var(--fw-strong); }
+b, strong { font-weight: var(--fw-strong); }
+h1, h2, h3 { font-weight: var(--fw-heading); }
 /* Only the large titles get the tighter tracking; small section labels keep body tracking */
 .side-head h1, .topbar .title, .panel-title h2, .sheet-head h2 { letter-spacing: var(--tracking-heading); }
 ::selection { background: rgba(255, 255, 255, 0.18); }

@@ -3,7 +3,7 @@
 .panel { grid-column: 2; grid-row: 1 / 4; display: flex; flex-direction: column; min-height: 0; overflow: hidden; margin: var(--inset) var(--inset) var(--inset) 0; border-radius: var(--r-card); background: var(--surface); box-shadow: var(--emboss-soft); }
 .panel-head { display: grid; gap: 8px; padding: 0 8px 6px; }
 .panel-title { display: flex; align-items: center; gap: 8px; height: calc(var(--header-h) - 2 * var(--inset)); padding-left: 6px; }
-.panel-title h2 { font-size: var(--fs-l); font-weight: var(--fw-strong); }
+.panel-title h2 { font-size: var(--fs-l); font-weight: var(--fw-heading); }
 .seg { display: flex; padding: 3px; border-radius: calc(var(--r-s) + 3px); background: var(--well); box-shadow: var(--deboss-even); }
 .seg button { flex: 1; height: var(--ctl-h-s); display: inline-flex; align-items: center; justify-content: center; gap: 5px; border-radius: var(--r-s); font-size: var(--fs-s); font-weight: var(--fw-strong); color: var(--text-3); transition: color var(--fast) var(--ease); }
 .seg button:hover { color: var(--text-2); }
