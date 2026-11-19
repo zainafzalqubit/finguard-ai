@@ -1,0 +1,31 @@
+/* Upload folder: glass folder drop zone. Cards fan out on drag, sink in on drop. Motion follows var(--ease). */
+.drop { --spring: cubic-bezier(0.34, 1.4, 0.5, 1); --move: 0.42s; display: grid; justify-items: center; gap: 4px; padding: 34px 16px 18px; border-radius: var(--r-l); text-align: center; cursor: pointer; background: var(--well); box-shadow: var(--deboss); transition: background var(--move) var(--ease); }
+.drop[data-state="drag"] { background: color-mix(in oklab, var(--raised) 45%, var(--well)); }
+.drop .sub { min-height: 2.7em; }
+
+.folder { position: relative; width: 132px; height: 100px; margin-bottom: 10px; perspective: 420px; }
+.folder-back, .folder-front { position: absolute; inset-inline: 0; border-radius: 10px; }
+/* Back panel with its tab, the darker half of the folder */
+.folder-back { top: 10px; bottom: 0; background: linear-gradient(180deg, var(--raised-top), var(--raised)); box-shadow: var(--emboss); }
+.folder-back::before { content: ""; position: absolute; top: -9px; left: 0; width: 46px; height: 14px; border-radius: 7px 7px 0 0; background: var(--raised-top); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.075); }
+/* Front panel is frosted glass, so cards inside read as blurred shapes, and it tips forward to open while dragging */
+.folder-front { z-index: 2; bottom: 0; height: 70px; display: grid; place-items: center; transform-origin: 50% 100%; background: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.04)); backdrop-filter: blur(7px) saturate(1.2); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16), var(--hairline), 0 10px 24px -12px rgba(0, 0, 0, 0.8); transition: transform var(--move) var(--spring); }
+.drop[data-state="drag"] .folder-front { transform: rotateX(-26deg); }
+
+/* One card per file kind; --i is its offset from the centre (-1.5 .. 1.5) */
+.folder-doc { z-index: 1; position: absolute; left: calc(50% - 17px); bottom: 26px; width: 34px; height: 44px; display: grid; place-items: center; align-content: center; gap: 2px; border-radius: var(--r-s); color: var(--ink); background: linear-gradient(180deg, color-mix(in oklab, var(--kc) 82%, var(--white)), var(--kc)); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), var(--hairline), 0 4px 10px -4px rgba(0, 0, 0, 0.7); opacity: 0; transform: translate(calc(var(--i) * 12px), 30px) scale(0.85); transition: transform var(--move) var(--spring), opacity var(--move) var(--ease); transition-delay: calc((var(--i) + 1.5) * 40ms); }
+.folder-doc .hi { --icon: 15px; }
+.folder-doc-tag { font-size: 7.5px; letter-spacing: 0.02em; opacity: 0.7; }
+.drop[data-state="idle"]:hover .folder-doc { opacity: 1; transform: translate(calc(var(--i) * 14px), 14px) rotate(calc(var(--i) * 4deg)) scale(0.9); }
+.drop[data-state="filled"] .folder-doc[data-in] { opacity: 1; transform: translate(calc(var(--i) * 18px), -12px) rotate(calc(var(--i) * 6deg)); }
+.drop[data-state="drag"] .folder-doc { opacity: 1; transform: translate(calc(var(--i) * 30px), -44px) rotate(calc(var(--i) * 11deg)); }
+
+.folder-check { width: 24px; height: 24px; display: grid; place-items: center; border-radius: 50%; color: var(--ink); background: var(--ok); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 2px 8px -2px rgba(0, 0, 0, 0.6); animation: check-pop 0.45s var(--spring) 0.25s both; }
+.folder-check .hi { --icon: 14px; }
+@keyframes check-pop { from { opacity: 0; transform: scale(0.4); } }
+
+.drop:has(input:focus-visible) { outline: 2px solid rgba(255, 255, 255, 0.55); outline-offset: 2px; }
+
+/* File rows arrive one after another after a drop */
+.files li { animation: row-in 0.3s var(--ease) both; animation-delay: calc(min(var(--i, 0), 12) * 30ms); }
+@keyframes row-in { from { opacity: 0; transform: translateY(4px); } }

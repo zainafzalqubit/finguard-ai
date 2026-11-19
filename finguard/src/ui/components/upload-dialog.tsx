@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { DragEvent, ReactElement } from "react";
+import type { CSSProperties, ReactElement } from "react";
 
 import { FILE_KINDS, KIND_ORDER, fileProblem, kindMeta } from "@/domain/file-kinds";
 import { fileSize, plural } from "@/ui/format";
 
 import { Icon } from "./icon";
 import { useModelOptions } from "./use-model-options";
+import { UploadFolder } from "./upload-folder";
 import { useUploadFiles } from "./use-upload-files";
 
 interface UploadDialogProps {
@@ -21,7 +22,6 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
   const dialogRef = useRef<HTMLDialogElement>(null);
   const upload = useUploadFiles();
   const modelChoice = useModelOptions(open);
-  const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { loadSample } = upload;
@@ -40,12 +40,6 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
   useEffect(() => {
     if (open && preferSample) void loadSample().then(setError);
   }, [open, preferSample, loadSample]);
-
-  const onDrop = (event: DragEvent<HTMLLabelElement>): void => {
-    event.preventDefault();
-    setDragging(false);
-    upload.add(event.dataTransfer.files);
-  };
 
   const start = async (): Promise<void> => {
     setBusy(true);
@@ -67,12 +61,7 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
         <button className="key flat icon" aria-label="Close" onClick={onClose}><Icon name="cancel-01" /></button>
       </header>
       <div className="sheet-body" tabIndex={-1}>
-        <label className={`drop ${dragging ? "drag" : ""}`} onDragOver={(e) => { e.preventDefault(); setDragging(true); }} onDragLeave={() => setDragging(false)} onDrop={onDrop}>
-          <input type="file" className="sr-only" multiple accept=".pdf,.csv" onChange={(e) => { if (e.target.files) upload.add(e.target.files); e.target.value = ""; }} />
-          <span className="tile-icon"><Icon name="upload-04" /></span>
-          <strong>Drop files here, or <span className="link">browse</span></strong>
-          <span className="sub">Invoices as PDF. Purchase orders, payments and the vendor list as CSV.</span>
-        </label>
+        <UploadFolder counts={upload.counts} onFiles={upload.add} />
         <section>
           <div className="sheet-label">
             <h3>This audit needs</h3>
@@ -111,7 +100,7 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
             <div className="sheet-label"><h3>{upload.usingSample ? "Sample files" : "Files"}</h3></div>
             <ul className="files">
               {upload.files.map((f, i) => (
-                <li key={f.name} className={f.kind ? "" : "unknown"}>
+                <li key={f.name} className={f.kind ? "" : "unknown"} style={{ "--i": i } as CSSProperties}>
                   <Icon name={/\.pdf$/i.test(f.name) ? "pdf-01" : "csv-01"} />
                   <span className="grow"><span className="name">{f.name}</span><span className="sub">{f.kind ? kindMeta(f.kind).label : fileProblem(f.name)}</span></span>
                   <span className="size">{fileSize(f.size)}</span>

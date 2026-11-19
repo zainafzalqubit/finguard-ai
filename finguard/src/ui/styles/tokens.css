@@ -29,6 +29,12 @@
   --a-sentinel: #b8a6d9;
   --a-engine: #8c8c8c;
 
+  /* File kind colours (upload folder cards), reusing the palette above */
+  --k-invoices: var(--high);
+  --k-pos: var(--a-tally);
+  --k-payments: var(--ok);
+  --k-vendors: var(--a-sentinel);
+
   /* Radius scale: inner radius = outer radius - padding, so nested shapes stay concentric */
   --r-l: 12px;
   --r-m: 8px;
