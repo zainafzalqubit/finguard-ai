@@ -1,0 +1,19 @@
+{
+  "name": "finguard-demo-recording",
+  "private": true,
+  "type": "module",
+  "description": "Records the FinGuard demo video from the running app and renders it with ffmpeg.",
+  "scripts": {
+    "record": "node record.mjs",
+    "render": "node render.mjs",
+    "demo": "node record.mjs && node render.mjs"
+  },
+  "devDependencies": {
+    "ffmpeg-static": "5.2.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "ffmpeg-static"
+    ]
+  }
+}
