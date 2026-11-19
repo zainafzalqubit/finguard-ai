@@ -1,7 +1,7 @@
 // Builds ffmpeg expressions (in t, video seconds) for an eased camera: zoom level and centre point.
 // Marks: { type: "zoom", t, dur, rect (CSS px), fill } and { type: "zoomOut", t, dur }.
-// Frames are captured at 1.125x the output size; past ~1.45x zoom text would start to soften.
-const MAX_ZOOM = 1.45;
+// Frames are captured at 1.5x the output size; zooms up to 1.35x are still scaled down, never up, so text stays sharp.
+const MAX_ZOOM = 1.35;
 const smoother = (p) => `(${p})*(${p})*(${p})*((${p})*((${p})*6-15)+10)`;
 const fixed = (n) => Number(n.toFixed(4));
 

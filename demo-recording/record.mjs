@@ -10,8 +10,8 @@ import { Stage } from "./lib/stage.mjs";
 const APP = process.env.FINGUARD_URL ?? "http://localhost:3000/";
 const SAMPLES = resolve("../finguard/data/samples");
 const FRAMES = resolve("frames");
-// 1.5x capture (2160x1215) keeps up with 60 fps during the live audit; 2x dropped to ~40 fps.
-const VIEW = { width: 1440, height: 810, scale: 1.5 };
+// 2x capture (2880x1620): every shot is scaled down to 1080p, so text stays sharp. The live audit captures at ~45 fps.
+const VIEW = { width: 1440, height: 810, scale: 2 };
 const RUN_TIMEOUT_MS = 10 * 60_000;
 // The free Gemini tier makes a full audit take minutes; that stretch is shown sped up, with a badge.
 const SPEED = 8;

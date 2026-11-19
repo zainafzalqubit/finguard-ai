@@ -37,8 +37,8 @@ export class Stage {
 
   async capture(everyNthFrame = 1) {
     const { width, height, scale } = this.view;
-    // Quality 65 lets Edge encode every frame in time; artifacts vanish when scaled down to 1080p.
-    await this.b.send("Page.startScreencast", { format: "jpeg", quality: 65, maxWidth: width * scale, maxHeight: height * scale, everyNthFrame });
+    // Quality 82: clean text edges once scaled down; higher quality slows Edge's encoder and drops frames.
+    await this.b.send("Page.startScreencast", { format: "jpeg", quality: 82, maxWidth: width * scale, maxHeight: height * scale, everyNthFrame });
   }
 
   async stopCapture() {

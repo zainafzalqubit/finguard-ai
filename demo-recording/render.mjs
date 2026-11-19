@@ -71,7 +71,7 @@ writeFileSync(join(OUT, "filter.txt"), parts.join(";\n"));
 const args = ["-hide_banner", "-y", "-f", "concat", "-safe", "0", "-i", join(OUT, "frames.ffconcat")];
 overlays.forEach((o, i) => args.push("-loop", "1", "-framerate", String(FPS), "-t", (o.to - o.from).toFixed(3), "-i", pngs[i].file));
 args.push("-filter_complex_script", join(OUT, "filter.txt"), "-map", "[out]", "-r", String(FPS), "-t", total.toFixed(3),
-  "-c:v", "libx264", "-preset", "slow", "-crf", "17", "-profile:v", "high", "-movflags", "+faststart", join(OUT, "finguard-demo.mp4"));
+  "-c:v", "libx264", "-preset", "slow", "-crf", "15", "-profile:v", "high", "-movflags", "+faststart", join(OUT, "finguard-demo.mp4"));
 
 console.log(`Rendering ${total.toFixed(1)} s from ${used.length} frames...`);
 const result = spawnSync(ffmpeg, args, { stdio: ["ignore", "inherit", "inherit"] });
