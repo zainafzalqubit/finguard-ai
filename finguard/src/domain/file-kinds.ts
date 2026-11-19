@@ -32,7 +32,10 @@ export function kindMeta(key: DocumentKind): FileKind {
   return kind;
 }
 
+/** Extensions FinGuard can read at all. */
+export const READABLE_FILE = /\.(pdf|csv)$/i;
+
 export function fileProblem(fileName: string): string {
-  if (!/\.(pdf|csv)$/i.test(fileName)) return "Only PDF and CSV files can be read";
+  if (!READABLE_FILE.test(fileName)) return "Only PDF and CSV files can be read";
   return "Rename it to include po, payments or vendors";
 }

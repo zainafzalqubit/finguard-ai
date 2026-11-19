@@ -1,28 +1,35 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties, ReactElement } from "react";
+import type { ReactElement } from "react";
 
-import { FILE_KINDS, KIND_ORDER, fileProblem, kindMeta } from "@/domain/file-kinds";
-import { fileSize, plural } from "@/ui/format";
+import { FILE_KINDS, KIND_ORDER, kindMeta } from "@/domain/file-kinds";
+import { plural } from "@/ui/format";
+import { UPLOAD_IDLE } from "@/ui/upload-progress";
+import type { UploadPhase } from "@/ui/upload-progress";
 
 import { Icon } from "./icon";
-import { useModelOptions } from "./use-model-options";
+import { UploadFileList } from "./upload-file-list";
 import { UploadFolder } from "./upload-folder";
+import { useModelOptions } from "./use-model-options";
 import { useUploadFiles } from "./use-upload-files";
 
 interface UploadDialogProps {
   open: boolean;
   preferSample: boolean;
   onClose: () => void;
-  onStart: (form: FormData) => Promise<string | null>;
+  onStart: (form: FormData, onProgress: (fraction: number) => void) => Promise<string | null>;
 }
+
+/** How long the finished upload stays on screen before the dialog closes, so the checks can land. */
+const SENT_HOLD_MS = 700;
+const START_LABEL: Record<UploadPhase["step"], string> = { idle: "Start audit", sending: "Uploading…", sent: "Starting…", failed: "Retry upload" };
 
 export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDialogProps): ReactElement {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const upload = useUploadFiles();
   const modelChoice = useModelOptions(open);
-  const [busy, setBusy] = useState(false);
+  const [phase, setPhase] = useState<UploadPhase>(UPLOAD_IDLE);
   const [error, setError] = useState<string | null>(null);
   const { loadSample } = upload;
 
@@ -41,27 +48,48 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
     if (open && preferSample) void loadSample().then(setError);
   }, [open, preferSample, loadSample]);
 
+  // Once bytes are on the way the dialog stays open until the audit starts or the upload fails.
+  const locked = phase.step === "sending" || phase.step === "sent";
+
+  const close = (): void => {
+    if (locked) return;
+    setPhase(UPLOAD_IDLE);
+    onClose();
+  };
+
   const start = async (): Promise<void> => {
-    setBusy(true);
+    setError(null);
+    setPhase({ step: "sending", fraction: 0 });
     const form = upload.formData();
     if (modelChoice.selected) form.set("provider", modelChoice.selected);
-    const problem = await onStart(form);
-    setBusy(false);
-    setError(problem);
-    if (!problem) onClose();
+    let sent = 0;
+    const problem = await onStart(form, (fraction) => {
+      sent = fraction;
+      // Every byte is out: the rest is the server starting the run, so show the upload as done.
+      setPhase(fraction >= 1 ? { step: "sent" } : { step: "sending", fraction });
+    });
+    if (problem) {
+      setError(problem);
+      setPhase({ step: "failed", fraction: sent });
+      return;
+    }
+    setPhase({ step: "sent" });
+    await new Promise((resolve) => setTimeout(resolve, SENT_HOLD_MS));
+    setPhase(UPLOAD_IDLE);
+    onClose();
   };
 
   const ready = upload.files.filter((f) => f.kind).length;
   const hint = error ?? (upload.missing ? `${upload.missing} of ${FILE_KINDS.length} file types still missing` : `${plural(ready, "file")} ready to check`);
 
   return (
-    <dialog ref={dialogRef} className="sheet" aria-labelledby="upload-title" onClose={onClose} onClick={(e) => e.target === dialogRef.current && onClose()}>
+    <dialog ref={dialogRef} className="sheet" aria-labelledby="upload-title" onClose={close} onCancel={(e) => { if (locked) e.preventDefault(); }} onClick={(e) => e.target === dialogRef.current && close()}>
       <header className="sheet-head">
         <div><h2 id="upload-title">New audit</h2><p>Add the files to check. FinGuard reads invoice PDFs and CSV exports.</p></div>
-        <button className="key flat icon" aria-label="Close" onClick={onClose}><Icon name="cancel-01" /></button>
+        <button className="key flat icon" aria-label="Close" onClick={close}><Icon name="cancel-01" /></button>
       </header>
       <div className="sheet-body" tabIndex={-1}>
-        <UploadFolder counts={upload.counts} onFiles={upload.add} />
+        <UploadFolder counts={upload.counts} bytes={upload.bytes} phase={phase} onFiles={upload.add} />
         <section>
           <div className="sheet-label">
             <h3>This audit needs</h3>
@@ -98,23 +126,14 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
         {upload.files.length > 0 && (
           <section>
             <div className="sheet-label"><h3>{upload.usingSample ? "Sample files" : "Files"}</h3></div>
-            <ul className="files">
-              {upload.files.map((f, i) => (
-                <li key={f.name} className={f.kind ? "" : "unknown"} style={{ "--i": i } as CSSProperties}>
-                  <Icon name={/\.pdf$/i.test(f.name) ? "pdf-01" : "csv-01"} />
-                  <span className="grow"><span className="name">{f.name}</span><span className="sub">{f.kind ? kindMeta(f.kind).label : fileProblem(f.name)}</span></span>
-                  <span className="size">{fileSize(f.size)}</span>
-                  <button className="key flat icon" aria-label={`Remove ${f.name}`} onClick={() => upload.remove(i)}><Icon name="cancel-01" /></button>
-                </li>
-              ))}
-            </ul>
+            <UploadFileList files={upload.files} phase={phase} onRemove={upload.remove} />
           </section>
         )}
       </div>
       <footer className="sheet-foot">
         <span className={`hint ${error ? "error" : ""}`.trim()}>{hint}</span>
-        <button className="key" onClick={onClose}>Cancel</button>
-        <button className="key primary" disabled={upload.missing > 0 || busy} onClick={() => void start()}>{busy ? "Starting…" : "Start audit"}</button>
+        <button className="key" disabled={locked} onClick={close}>Cancel</button>
+        <button className="key primary" disabled={upload.missing > 0 || locked} onClick={() => void start()}>{START_LABEL[phase.step]}</button>
       </footer>
     </dialog>
   );

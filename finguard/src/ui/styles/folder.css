@@ -1,5 +1,5 @@
 /* Upload folder: glass folder drop zone. Cards fan out on drag, sink in on drop. Motion follows var(--ease). */
-.drop { --spring: cubic-bezier(0.34, 1.4, 0.5, 1); --move: 0.42s; display: grid; justify-items: center; gap: 4px; padding: 34px 16px 18px; border-radius: var(--r-l); text-align: center; cursor: pointer; background: var(--well); box-shadow: var(--deboss); transition: background var(--move) var(--ease); }
+.drop { --move: 0.42s; display: grid; justify-items: center; gap: 4px; padding: 34px 16px 18px; border-radius: var(--r-l); text-align: center; cursor: pointer; background: var(--well); box-shadow: var(--deboss); transition: background var(--move) var(--ease); }
 .drop[data-state="drag"] { background: color-mix(in oklab, var(--raised) 45%, var(--well)); }
 .drop .sub { min-height: 2.7em; }
 
@@ -29,3 +29,23 @@
 /* File rows arrive one after another after a drop */
 .files li { animation: row-in 0.3s var(--ease) both; animation-delay: calc(min(var(--i, 0), 12) * 30ms); }
 @keyframes row-in { from { opacity: 0; transform: translateY(4px); } }
+
+/* Uploading: cards sit in the folder, the front shows the share sent */
+.drop[aria-busy="true"] { cursor: default; }
+.drop:is([data-state="sending"], [data-state="sent"], [data-state="failed"]) .folder-doc[data-in] { opacity: 1; transform: translate(calc(var(--i) * 18px), -12px) rotate(calc(var(--i) * 6deg)); }
+.drop[data-state="sending"] .folder-doc[data-in] { animation: doc-bob 1.4s var(--ease) infinite alternate; animation-delay: calc((var(--i) + 1.5) * 120ms); }
+@keyframes doc-bob { to { translate: 0 -5px; } }
+.folder-pct { font-size: var(--fs-s); font-variant-numeric: tabular-nums; color: var(--text); }
+.folder-check.bad { background: var(--high); }
+
+/* Per-file progress rows */
+.file-bar { position: relative; display: block; height: 3px; margin-top: 6px; border-radius: 2px; overflow: hidden; background: var(--well); box-shadow: var(--deboss-even); }
+.file-bar::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: var(--text-2); transform-origin: left; transform: scaleX(var(--p, 0)); transition: transform 0.35s var(--ease), background var(--fast) var(--ease); }
+.files li[data-status="sent"] .file-bar::after { background: var(--ok); }
+.files li[data-status="failed"] .file-bar::after { background: var(--high); }
+.files li[data-status="failed"] .size { color: var(--high); }
+.files li .size { font-variant-numeric: tabular-nums; white-space: nowrap; }
+.file-state { width: var(--ctl-h); height: var(--ctl-h); flex: none; display: grid; place-items: center; }
+.file-state .hi { --icon: 14px; }
+.file-state.ok { color: var(--ok); animation: check-pop 0.35s var(--spring) both; }
+.file-state.bad { color: var(--high); }

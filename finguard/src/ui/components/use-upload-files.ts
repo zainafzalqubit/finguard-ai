@@ -18,6 +18,8 @@ export interface UploadFiles {
   usingSample: boolean;
   counts: Record<DocumentKind, number>;
   missing: number;
+  /** Bytes of the files an audit will read (unknown kinds are left out). */
+  bytes: number;
   add: (list: FileList | File[]) => void;
   remove: (index: number) => void;
   loadSample: () => Promise<string | null>;
@@ -29,10 +31,12 @@ export function useUploadFiles(): UploadFiles {
   const [usingSample, setUsingSample] = useState(false);
 
   const add = useCallback((list: FileList | File[]) => {
+    // Copy now: a FileList is live, and the input clears it right after this call, before the updater below runs.
+    const picked = [...list];
     setUsingSample(false);
     setFiles((current) => {
       const known = new Set(current.filter((f) => f.file).map((f) => f.name));
-      const added = [...list].filter((file) => !known.has(file.name)).map((file) => ({ name: file.name, size: file.size, kind: kindOf(file.name), file }));
+      const added = picked.filter((file) => !known.has(file.name)).map((file) => ({ name: file.name, size: file.size, kind: kindOf(file.name), file }));
       return [...current.filter((f) => f.file), ...added];
     });
   }, []);
@@ -63,5 +67,6 @@ export function useUploadFiles(): UploadFiles {
 
   const counts = Object.fromEntries(FILE_KINDS.map((k) => [k.key, files.filter((f) => f.kind === k.key).length])) as Record<DocumentKind, number>;
   const missing = FILE_KINDS.filter((k) => counts[k.key] === 0).length;
-  return { files, usingSample, counts, missing, add, remove, loadSample, formData };
+  const bytes = files.reduce((sum, f) => sum + (f.kind ? f.size : 0), 0);
+  return { files, usingSample, counts, missing, bytes, add, remove, loadSample, formData };
 }

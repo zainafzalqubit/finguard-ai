@@ -4,25 +4,26 @@ import { useCallback, useEffect, useReducer, useRef } from "react";
 
 import type { RunEvent } from "@/domain/events";
 
+import { postForm } from "./post-form";
 import { EMPTY_RUN, runReducer } from "./run-view";
 import type { RunView } from "./run-view";
 
 export interface RunControls {
   view: RunView;
   /** Starts an audit. Resolves to an error message the dialog can show, or null on success. */
-  startAudit: (form: FormData) => Promise<string | null>;
+  startAudit: (form: FormData, onProgress?: (fraction: number) => void) => Promise<string | null>;
 }
 
 export function useRun(): RunControls {
   const [view, dispatch] = useReducer(runReducer, EMPTY_RUN);
   const lastSeq = useRef(-1);
 
-  const startAudit = useCallback(async (form: FormData): Promise<string | null> => {
+  const startAudit = useCallback(async (form: FormData, onProgress?: (fraction: number) => void): Promise<string | null> => {
     try {
-      const response = await fetch("/api/runs", { method: "POST", body: form });
-      const body = (await response.json()) as { runId?: string; error?: string };
-      if (!response.ok || !body.runId) return body.error ?? "The audit could not start.";
-      dispatch({ type: "start", runId: body.runId });
+      const { ok, body } = await postForm("/api/runs", form, onProgress);
+      const reply = body as { runId?: string; error?: string } | null;
+      if (!ok || !reply?.runId) return reply?.error ?? "The audit could not start.";
+      dispatch({ type: "start", runId: reply.runId });
       return null;
     } catch {
       return "Could not reach the FinGuard server. Is pnpm dev running?";
