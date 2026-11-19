@@ -1,7 +1,7 @@
 # FinGuard demo recording
 
 Records the FinGuard demo video from the running app and renders it as a smooth 1080p, 60 fps MP4.
-Output: `output/finguard-demo.mp4`.
+Output: `output/finguard-demo.mp4`, and with the voice-over `output/finguard-demo-voice-andrew.mp4`.
 
 ## How it works
 
@@ -37,6 +37,12 @@ pnpm run demo                     # real Gemini run; the waiting stretch plays 8
 
 Recording takes about as long as the demo itself.
 Rendering takes about 8 minutes.
+
+`pnpm run narrate` adds the voice-over without changing the picture: the video stream is copied, and an AAC track is added.
+- The voice is Microsoft's free "Andrew" neural voice, through the Edge Read Aloud service, so it needs internet. Only the narration text is sent.
+- Each line starts with its scene, and the script stops if a line would run past its scene.
+- Finished lines are cached, so a dropped connection only re-fetches what failed.
+- To change what is said, edit `SCRIPT` in `narrate.mjs`.
 
 ## Notes
 

@@ -6,14 +6,17 @@
   "scripts": {
     "record": "node record.mjs",
     "render": "node render.mjs",
-    "demo": "node record.mjs && node render.mjs"
+    "demo": "node record.mjs && node render.mjs && node narrate.mjs",
+    "narrate": "node narrate.mjs"
   },
   "devDependencies": {
-    "ffmpeg-static": "5.2.0"
+    "ffmpeg-static": "5.2.0",
+    "msedge-tts": "2.1.1"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
-      "ffmpeg-static"
+      "ffmpeg-static",
+      "msedge-tts"
     ]
   }
 }
