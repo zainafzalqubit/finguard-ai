@@ -20,10 +20,19 @@ Open http://localhost:3000, click **New audit**, then **Use sample data**, then 
 Or open http://localhost:3000/?audit=sample to start the sample audit straight away.
 
 It runs offline by default with a built-in model.
-To use a real model, copy `.env.example` to `.env.local`, set one key, then restart `pnpm dev`:
+To use a real model, copy `.env.example` to `.env.local`, add a key, then restart `pnpm dev`.
+Every provider with a key appears in the **Model** switch of the New audit dialog, so you can change model per audit.
+Defaults are free models:
 
-- `OPENROUTER_API_KEY`: any provider through OpenRouter (default `anthropic/claude-haiku-5.5`; pick another with `FINGUARD_MODEL`)
-- `ANTHROPIC_API_KEY`: Claude directly (default `claude-haiku-4-5`)
+| Provider | Key | Default model | Notes |
+| --- | --- | --- | --- |
+| Gemini | `GEMINI_API_KEY` | `gemini-3.5-flash-lite` | Free tier, 15 requests/min; sample audit ~3.5 min |
+| OpenRouter | `OPENROUTER_API_KEY` | `baidu/ernie-5.5-flash-preview:free` | ~50 free requests/day without credits |
+| Offline | none | built-in | Same goals and tools, no network |
+
+Change a model with `GEMINI_MODEL` / `OPENROUTER_MODEL`, and the preselected provider with `FINGUARD_PROVIDER`.
+Rate limits are retried automatically (waiting as long as the provider asks); daily caps stop with a clear message,
+and an invoice whose checks could not finish is reported as "not fully checked", never as passed.
 
 ## How it works
 

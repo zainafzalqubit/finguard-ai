@@ -18,6 +18,8 @@ export function worstSeverity(findings: Finding[]): Severity | null {
 export function slipState(view: RunView, documentId: string): SlipState {
   const flagged = worstSeverity(view.findings.filter((f) => f.documentId === documentId));
   if (flagged) return flagged;
+  // A document whose checks did not finish is never shown as clean.
+  if (view.incomplete.includes(documentId)) return "";
   const own = view.tasks.filter((t) => t.documentId === documentId);
   if (own.some((t) => t.agent === "ledger" && t.end === null)) return "reading";
   if (!view.extracted[documentId]) return "";

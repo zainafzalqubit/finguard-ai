@@ -21,12 +21,13 @@ export interface RunView {
   findings: Finding[];
   log: LogLine[];
   passed: string[];
+  incomplete: string[];
   error: string | null;
 }
 
 export const EMPTY_RUN: RunView = {
   status: "idle", runId: null, model: null, counts: null, clientZero: null, endAt: null,
-  tasks: [], tools: [], extracted: {}, findings: [], log: [], passed: [], error: null,
+  tasks: [], tools: [], extracted: {}, findings: [], log: [], passed: [], incomplete: [], error: null,
 };
 
 export type RunAction =
@@ -63,7 +64,7 @@ function applyEvent(view: RunView, event: RunEvent, receivedAt: number): RunView
     case "agent.note":
       return { ...view, log: note(view, { at: event.at, agent: event.agent, text: event.text, findingId: null, kind: "note" }) };
     case "run.completed":
-      return { ...view, status: "completed", endAt: event.at, passed: event.passed };
+      return { ...view, status: "completed", endAt: event.at, passed: event.passed, incomplete: event.incomplete };
     case "run.failed":
       return { ...view, status: "failed", endAt: event.at, error: event.error };
   }

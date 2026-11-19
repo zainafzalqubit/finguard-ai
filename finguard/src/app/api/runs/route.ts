@@ -17,9 +17,11 @@ async function filesFrom(form: FormData): Promise<UploadedFile[]> {
 /** Starts an audit. The run continues in the background; the page follows it over SSE. */
 export async function POST(request: Request): Promise<Response> {
   try {
-    const input = await loadUpload(await filesFrom(await request.formData()));
+    const form = await request.formData();
+    const input = await loadUpload(await filesFrom(form));
     const runId = createRun();
-    runAudit(runId, input).catch((error: unknown) => console.error(`Audit ${runId} crashed:`, error));
+    const provider = form.get("provider");
+    runAudit(runId, input, typeof provider === "string" ? provider : null).catch((error: unknown) => console.error(`Audit ${runId} crashed:`, error));
     return Response.json({ runId }, { status: 202 });
   } catch (error) {
     if (error instanceof UploadError) return Response.json({ error: error.message }, { status: 400 });

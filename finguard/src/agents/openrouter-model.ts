@@ -4,10 +4,7 @@ import type { GenerativeModel } from "@mozaik-ai/core";
 /** OpenRouter speaks the OpenAI Chat Completions dialect, which Mozaik's generic adapter supports. */
 export const OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1";
 
-/** Cheap, fast and good at tool calling. Override with FINGUARD_MODEL (any OpenRouter model id with tool support). */
-export const DEFAULT_OPENROUTER_MODEL = "anthropic/claude-haiku-5.5";
-
-/** Registers one OpenRouter model id (e.g. "anthropic/claude-haiku-5.5") as a Mozaik model. */
+/** Registers one OpenRouter model id (e.g. "baidu/ernie-5.5-flash-preview:free") as a Mozaik model. */
 export function openRouterModel(modelId: string, apiKey: string): GenerativeModel {
   return {
     endpoint: new OpenAIChatCompletions(undefined, { baseURL: OPENROUTER_BASE_URL, apiKey }),

@@ -32,3 +32,5 @@
 .sheet-foot { display: flex; align-items: center; gap: 6px; padding: 10px 12px 10px 20px; background: var(--window); }
 .sheet-foot .hint { flex: 1; font-size: var(--fs-s); color: var(--text-3); }
 .sheet-foot .hint.error { color: var(--high); }
+/* Full model name under the provider switch */
+.model-name { margin-top: 6px; padding-left: 2px; font-size: var(--fs-s); color: var(--text-3); }

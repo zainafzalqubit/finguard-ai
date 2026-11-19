@@ -1,8 +1,8 @@
 import { initAgentModule, resolveAgentModule } from "@mozaik-ai/core";
 import type { Agent } from "@mozaik-ai/core";
 
-import { modelSetup } from "./models";
-import type { ModelSetup } from "./models";
+import { providerSetup } from "./providers";
+import type { ProviderSetup } from "./providers";
 import { INSTRUCTIONS } from "./prompts";
 import type { ModelAgentId } from "./prompts";
 import { TOOLS, TOOL_DEFINITIONS } from "./tools";
@@ -19,7 +19,7 @@ export type AgentTeam = Record<ModelAgentId, Agent>;
 
 export interface AgentRuntime {
   team: AgentTeam;
-  model: ModelSetup;
+  providers: ProviderSetup;
 }
 
 function moduleReady(): boolean {
@@ -34,22 +34,22 @@ function moduleReady(): boolean {
 // One agent module per server process; hot reload must not initialise it twice. Restart the server after changing .env.local.
 const globalStore = globalThis as typeof globalThis & { __finguardRuntime?: Promise<AgentRuntime> };
 
-async function createRuntime(model: ModelSetup): Promise<AgentRuntime> {
+async function createRuntime(providers: ProviderSetup): Promise<AgentRuntime> {
   const { createAgent } = resolveAgentModule();
   const make = (id: ModelAgentId): Promise<Agent> =>
     createAgent({ name: id, instruction: INSTRUCTIONS[id], tools: AGENT_TOOLS[id].map((tool) => TOOL_DEFINITIONS[tool]) });
   const [ledger, tally, sentinel] = await Promise.all([make("ledger"), make("tally"), make("sentinel")]);
-  return { team: { ledger, tally, sentinel }, model };
+  return { team: { ledger, tally, sentinel }, providers };
 }
 
 export function agentRuntime(): Promise<AgentRuntime> {
   if (!moduleReady()) {
-    const model = modelSetup();
-    initAgentModule({ inferenceRunnerConfig: { supportedModels: model.models } });
+    const providers = providerSetup();
+    initAgentModule({ inferenceRunnerConfig: { supportedModels: providers.models } });
     const { registerTool } = resolveAgentModule();
     for (const [name, tool] of Object.entries(TOOLS)) registerTool(name, tool);
-    globalStore.__finguardRuntime = createRuntime(model);
+    globalStore.__finguardRuntime = createRuntime(providers);
   }
-  globalStore.__finguardRuntime ??= createRuntime(modelSetup());
+  globalStore.__finguardRuntime ??= createRuntime(providerSetup());
   return globalStore.__finguardRuntime;
 }

@@ -26,6 +26,21 @@ const toggled = (set: Set<string>, id: string): Set<string> => {
   return next;
 };
 
+interface OutcomeProps { icon: string; title: string; refs: string[]; note?: string; warn?: boolean }
+
+function Outcome({ icon, title, refs, note, warn = false }: OutcomeProps): ReactElement {
+  return (
+    <div className={`passed ${warn ? "warn" : ""}`.trim()}>
+      <span className="sev-icon"><Icon name={icon} /></span>
+      <div>
+        <strong>{title}</strong>
+        {note && <div>{note}</div>}
+        <div className="refs">{refs.map((ref, i) => <span key={`${ref}-${i}`}>{ref}</span>)}</div>
+      </div>
+    </div>
+  );
+}
+
 /** Keyed by run id in the dashboard, so a new run starts with a clean panel. */
 export function FindingsPanel({ view, focus }: PanelProps): ReactElement {
   const [filter, setFilter] = useState<Filter>("all");
@@ -74,13 +89,13 @@ export function FindingsPanel({ view, focus }: PanelProps): ReactElement {
             onToggle={() => setOpen((s) => toggled(s, finding.id))} onReview={() => setReviewed((s) => toggled(s, finding.id))} />
         ))}
       </div>
-      {view.status === "completed" && view.passed.length > 0 && (
-        <div className="passed">
-          <span className="sev-icon"><Icon name="checkmark-circle-02" /></span>
-          <div>
-            <strong>{plural(view.passed.length, "invoice")} passed every check</strong>
-            <div className="refs">{view.passed.map((invoice, i) => <span key={`${invoice}-${i}`}>{invoice}</span>)}</div>
-          </div>
+      {view.status === "completed" && (view.passed.length > 0 || view.incomplete.length > 0) && (
+        <div className="outcomes">
+          {view.incomplete.length > 0 && (
+            <Outcome warn icon="alert-circle" title={`${plural(view.incomplete.length, "invoice")} not fully checked`} refs={view.incomplete}
+              note="A check could not finish (see Activity). Run the audit again before relying on these." />
+          )}
+          {view.passed.length > 0 && <Outcome icon="checkmark-circle-02" title={`${plural(view.passed.length, "invoice")} passed every check`} refs={view.passed} />}
         </div>
       )}
     </aside>

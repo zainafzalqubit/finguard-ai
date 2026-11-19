@@ -12,7 +12,8 @@ export type RunEvent =
   | (Timed & { type: "invoice.extracted"; documentId: string; invoiceNumber: string })
   | (Timed & { type: "finding.created"; finding: Finding })
   | (Timed & { type: "agent.note"; agent: AgentId; text: string })
-  | (Timed & { type: "run.completed"; passed: string[] })
+  /** passed: invoice numbers every check cleared. incomplete: documents some check could not finish (never reported as passed). */
+  | (Timed & { type: "run.completed"; passed: string[]; incomplete: string[] })
   | (Timed & { type: "run.failed"; error: string });
 
 export type RunEventType = RunEvent["type"];

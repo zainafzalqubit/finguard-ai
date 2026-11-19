@@ -7,6 +7,7 @@ import { FILE_KINDS, KIND_ORDER, fileProblem, kindMeta } from "@/domain/file-kin
 import { fileSize, plural } from "@/ui/format";
 
 import { Icon } from "./icon";
+import { useModelOptions } from "./use-model-options";
 import { useUploadFiles } from "./use-upload-files";
 
 interface UploadDialogProps {
@@ -19,6 +20,7 @@ interface UploadDialogProps {
 export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDialogProps): ReactElement {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const upload = useUploadFiles();
+  const modelChoice = useModelOptions(open);
   const [dragging, setDragging] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -47,7 +49,9 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
 
   const start = async (): Promise<void> => {
     setBusy(true);
-    const problem = await onStart(upload.formData());
+    const form = upload.formData();
+    if (modelChoice.selected) form.set("provider", modelChoice.selected);
+    const problem = await onStart(form);
     setBusy(false);
     setError(problem);
     if (!problem) onClose();
@@ -88,6 +92,20 @@ export function UploadDialog({ open, preferSample, onClose, onStart }: UploadDia
             })}
           </ul>
         </section>
+        {modelChoice.options.length > 1 && (
+          <section>
+            <div className="sheet-label"><h3>Model</h3></div>
+            <div className="seg" role="group" aria-label="Model">
+              {modelChoice.options.map((option) => (
+                <button key={option.provider} aria-pressed={modelChoice.selected === option.provider}
+                  title={option.label} onClick={() => modelChoice.select(option.provider)}>
+                  {option.label.split(":")[0]}
+                </button>
+              ))}
+            </div>
+            <p className="model-name">{modelChoice.options.find((o) => o.provider === modelChoice.selected)?.label}</p>
+          </section>
+        )}
         {upload.files.length > 0 && (
           <section>
             <div className="sheet-label"><h3>{upload.usingSample ? "Sample files" : "Files"}</h3></div>

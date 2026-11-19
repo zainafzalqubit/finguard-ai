@@ -15,8 +15,8 @@ function describe(event: RunEvent): string | null {
     case "task.started": return `${AGENTS[event.agent].name.padEnd(8)} started ${event.label}`;
     case "tool.finished": return event.blocked ? `${AGENTS[event.agent].name.padEnd(8)} BLOCKED ${event.tool}` : null;
     case "finding.created": return `${"FINDING".padEnd(8)} ${event.finding.severity.toUpperCase()} ${event.finding.ruleId} on ${event.finding.documentId}`;
-    case "agent.note": return event.text.startsWith("Failed") || event.text.startsWith("Blocked") || event.text.startsWith("Could not") ? `${AGENTS[event.agent].name.padEnd(8)} ${event.text}` : null;
-    case "run.completed": return `run completed; passed: ${event.passed.join(", ")}`;
+    case "agent.note": return /^(Failed|Blocked|Rate limited|Replied without|Stopped)/.test(event.text) ? `${AGENTS[event.agent].name.padEnd(8)} ${event.text}` : null;
+    case "run.completed": return `run completed; passed: ${event.passed.join(", ") || "none"}${event.incomplete.length ? `; NOT fully checked: ${event.incomplete.join(", ")}` : ""}`;
     case "run.failed": return `run FAILED: ${event.error}`;
     default: return null;
   }
