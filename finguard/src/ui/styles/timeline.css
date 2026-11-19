@@ -1,0 +1,58 @@
+/* Ported from design/dashboard.html (approved). Keep in sync with DESIGN.md. */
+/* Timeline */
+.timeline { grid-column: 1; grid-row: 2; position: relative; display: flex; flex-direction: column; min-height: 0; padding: 16px 20px 0 12px; }
+.goal { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 20px; }
+.goal p { max-width: 44ch; font-size: var(--fs-l); line-height: 1.4; text-wrap: balance; }
+.goal .meta { display: flex; gap: 14px; margin-top: 4px; font-size: var(--fs-s); color: var(--text-3); }
+.slips { display: flex; gap: 4px; padding: 5px; border-radius: var(--r-m); background: var(--well); box-shadow: var(--deboss); }
+.slips i { width: 10px; height: 16px; border-radius: 3px; background: var(--raised); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05); transition: background 0.3s var(--ease); }
+.slips i.reading, .slips i.checking, .slips i.clean, .slips i.high, .slips i.medium { box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.15); }
+.slips i.reading { background: var(--a-ledger); }
+.slips i.checking { background: var(--a-tally); }
+.slips i.clean { background: var(--ok); }
+.slips i.high { background: var(--high); }
+.slips i.medium { background: var(--medium); }
+
+.axis { position: relative; height: 20px; margin-left: var(--track-x); font-size: var(--fs-s); color: var(--text-3); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+.axis span { position: absolute; top: 0; transform: translateX(-50%); }
+.board { position: relative; flex: none; }
+.gridlines { position: absolute; inset: 0 0 0 var(--track-x); overflow: hidden; pointer-events: none; -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+.gridlines i { position: absolute; top: 0; bottom: 0; width: 1px; background: rgba(255, 255, 255, 0.035); }
+.now { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--cream); opacity: 0.45; will-change: transform; }
+.lane { position: relative; display: grid; grid-template-columns: var(--lane-head) 1fr; column-gap: var(--lane-gap); height: var(--lane-h); margin-bottom: 4px; }
+.lane-head { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.lane-head > div { min-width: 0; }
+.lane-head .name, .lane-head .sub { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.lane-head .name { font-weight: var(--fw-strong); line-height: 1.3; }
+.lane-head .sub { font-size: var(--fs-s); line-height: 1.3; color: var(--text-3); }
+.track { position: relative; overflow: hidden; contain: layout paint; border-radius: var(--r-m); background: rgba(0, 0, 0, 0.14); box-shadow: inset 0 1px 1.5px rgba(0, 0, 0, 0.35); -webkit-mask-image: var(--fade); mask-image: var(--fade); }
+.strip { position: absolute; inset: 0; will-change: transform; }
+.bar {
+  position: absolute; top: 11px; left: 0; height: 24px; display: flex; align-items: center; gap: 6px;
+  padding: 0 8px; border-radius: var(--r-s); white-space: nowrap; overflow: hidden;
+  font-size: var(--fs-s); font-weight: var(--fw-strong); color: color-mix(in oklab, var(--c) 60%, var(--text));
+  background: linear-gradient(180deg, color-mix(in oklab, var(--c) 17%, var(--surface)), color-mix(in oklab, var(--c) 10%, var(--surface)));
+  box-shadow: inset 0 1px 0 color-mix(in oklab, var(--c) 24%, transparent), inset 0 -1px 0 rgba(0, 0, 0, 0.2), var(--hairline), 0 1px 1.5px rgba(0, 0, 0, 0.4);
+}
+.bar.active { color: var(--text); background: linear-gradient(180deg, color-mix(in oklab, var(--c) 36%, var(--surface)), color-mix(in oklab, var(--c) 25%, var(--surface))); }
+.bar.active::before { content: ""; position: absolute; right: 0; top: 4px; bottom: 4px; width: 2px; border-radius: 1px; background: var(--c); }
+.bar.tick { top: 17px; height: 12px; padding: 0; border-radius: 3px; }
+/* Label size is set by the animation loop through data-size, so React's className updates never fight it */
+.bar span { overflow: hidden; text-overflow: ellipsis; }
+.bar .short, .bar[data-size="compact"] .full { display: none; }
+.bar[data-size="compact"] .short { display: inline; }
+.bar[data-size="quiet"] span { visibility: hidden; }
+.bar.flagged { cursor: pointer; }
+.bar.flagged::after { content: ""; margin-left: auto; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--sev); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sev) 25%, transparent); }
+.bar.flagged:hover { filter: brightness(1.15); }
+/* Activity feed: docked under the lanes so the column's spare height carries the run's story; same card material as sidebar and findings */
+.feed { flex: 1; min-height: 0; display: flex; flex-direction: column; margin-top: 16px; border-radius: var(--r-card); background: var(--surface); box-shadow: var(--emboss-soft); }
+.feed-head { display: flex; align-items: center; gap: 8px; padding: 12px 14px 6px; }
+.log { flex: 1; min-height: 0; overflow-y: auto; padding: 0 6px 6px; list-style: none; font-size: var(--fs-s); line-height: 1.45; color: var(--text-2); }
+.log-row { width: 100%; display: grid; grid-template-columns: 40px 6px minmax(0, 1fr) auto; align-items: center; gap: 10px; padding: 5px 8px; border-radius: var(--r-m); text-align: left; animation: arrive 0.4s var(--ease); }
+.log-row time { color: var(--text-3); }
+.log-row .text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.log-row.tool { color: var(--text-3); }
+.log-row.flag { color: var(--text); }
+.log-row.flag::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--sev); box-shadow: 0 0 0 2px color-mix(in oklab, var(--sev) 25%, transparent); }
+button.log-row:hover { background: var(--raised); }

@@ -1,0 +1,60 @@
+/* Ported from design/dashboard.html (approved). Keep in sync with DESIGN.md. */
+* { box-sizing: border-box; margin: 0; }
+html, body { height: 100%; }
+body {
+  font: 400 var(--fs-m)/1.45 var(--font);
+  font-feature-settings: "tnum" 1;
+  letter-spacing: var(--tracking);
+  color: var(--text);
+  -webkit-font-smoothing: antialiased;
+  background: var(--window);
+  overflow: hidden;
+}
+h1, h2, h3, b, strong { font-weight: var(--fw-strong); }
+/* Only the large titles get the tighter tracking; small section labels keep body tracking */
+.side-head h1, .topbar .title, .panel-title h2, .sheet-head h2 { letter-spacing: var(--tracking-heading); }
+::selection { background: rgba(255, 255, 255, 0.18); }
+* { scrollbar-width: thin; scrollbar-color: var(--raised-hi) transparent; -webkit-tap-highlight-color: transparent; }
+[hidden] { display: none !important; }
+.grow { flex: 1; min-width: 0; }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+:focus-visible { outline: 2px solid rgba(255, 255, 255, 0.55); outline-offset: 2px; }
+.hi { --icon: 16px; display: inline-block; width: var(--icon); height: var(--icon); flex: none; font-size: var(--icon); line-height: 1; }
+
+
+/* Keys: every button shares this one raised material */
+.key {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  height: var(--ctl-h); padding: 0 10px; border-radius: var(--r-m); white-space: nowrap;
+  font-size: var(--fs-s); font-weight: var(--fw-strong); color: var(--text);
+  background: var(--grad-raised); box-shadow: var(--emboss);
+  transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.key:hover { background: var(--grad-raised-hover); }
+.key:active, .key[aria-pressed="true"] { background: var(--raised); box-shadow: var(--deboss); }
+.key.primary { color: var(--ink); background: var(--grad-light); box-shadow: var(--emboss-light); }
+.key.primary:hover { background: linear-gradient(180deg, var(--white), var(--cream)); }
+.key.primary:active { box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.25), var(--hairline); }
+.key.icon { width: var(--ctl-h); padding: 0; }
+.key.flat { color: var(--text-2); background: none; box-shadow: none; }
+.key.flat:hover { color: var(--text); background: var(--raised); }
+.key.small { height: var(--ctl-h-s); padding: 0 8px; }
+.key:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.led { position: relative; width: 6px; height: 6px; flex: none; border-radius: 50%; background: var(--led-off); box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.6), 0 1px 0 rgba(255, 255, 255, 0.05); }
+.led.on, .led.busy { background: var(--ok); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 0 0 2.5px color-mix(in oklab, var(--ok) 15%, transparent); }
+.led.busy::after { content: ""; position: absolute; inset: -4px; border-radius: 50%; background: color-mix(in oklab, var(--ok) 35%, transparent); animation: ripple 1.6s var(--ease) infinite; will-change: transform, opacity; }
+@keyframes ripple { from { transform: scale(0.5); opacity: 0.9; } to { transform: scale(1.5); opacity: 0; } }
+
+/* Shared small parts */
+.avatar .hi { --icon: 14px; }
+/* Dark raised key with the agent colour only in the glyph and a faint tint, so avatars sit in the dark theme instead of glowing */
+.avatar { width: 24px; height: 24px; flex: none; border-radius: var(--r-s); display: grid; place-items: center; color: var(--c); background: linear-gradient(180deg, color-mix(in oklab, var(--c) 14%, var(--raised-hi)), color-mix(in oklab, var(--c) 8%, var(--raised))); box-shadow: var(--emboss); }
+.doc-icon { width: 24px; height: 24px; flex: none; border-radius: var(--r-s); display: grid; place-items: center; color: var(--text-2); background: var(--well); box-shadow: var(--deboss); }
+.doc-icon .hi { --icon: 14px; }
+.tile-icon { width: 36px; height: 36px; flex: none; border-radius: 10px; display: grid; place-items: center; color: var(--text-2); background: var(--grad-raised); box-shadow: var(--emboss); }
+.tile-icon .hi { --icon: 18px; }
+.pill { min-width: 22px; height: 20px; padding: 0 6px; border-radius: 999px; display: inline-grid; place-items: center; font-size: var(--fs-s); font-weight: var(--fw-strong); color: var(--text-2); background: var(--well); box-shadow: var(--deboss); }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }

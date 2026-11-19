@@ -1,0 +1,60 @@
+/* Ported from design/dashboard.html (approved). Keep in sync with DESIGN.md. */
+/* Rail */
+.rail { display: flex; flex-direction: column; align-items: center; gap: 4px; padding-bottom: 12px; background: var(--window); }
+.rail-top { width: 100%; height: var(--header-h); flex: none; display: grid; place-items: center; margin-bottom: 8px; }
+.rail .spacer { flex: 1; }
+.brand-mark { width: 20px; height: 20px; display: block; }
+.mark { width: 28px; height: 28px; border-radius: var(--r-m); display: grid; place-items: center; color: var(--ink); background: var(--grad-light); box-shadow: var(--emboss-light); }
+.rail .key.flat { width: 32px; height: 32px; padding: 0; color: var(--text-3); }
+.rail .key.flat[aria-current] { color: var(--text); background: var(--well); box-shadow: var(--deboss); }
+
+/* Sidebar */
+.side { display: flex; flex-direction: column; min-height: 0; overflow-y: auto; scrollbar-width: none; margin: var(--inset) var(--inset) var(--inset) 0; border-radius: var(--r-card); background: var(--surface); box-shadow: var(--emboss-soft); }
+.side::-webkit-scrollbar { display: none; }
+.side > * { flex: none; }
+.side-head { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; justify-content: space-between; height: calc(var(--header-h) - 2 * var(--inset)); margin: 0 0 8px; padding: 0 6px 0 14px; background: var(--surface); }
+.side-head h1 { font-size: var(--fs-l); font-weight: var(--fw-strong); }
+.section { padding: 4px 6px 12px; }
+.section + .section { padding-top: 8px; }
+.feed-head h2 { font-size: var(--fs-s); font-weight: var(--fw-strong); color: var(--text-3); }
+.section h2 { padding: 0 8px 6px; font-size: var(--fs-s); font-weight: var(--fw-strong); color: var(--text-3); }
+.row { display: flex; align-items: center; gap: 10px; padding: 6px 8px; border-radius: var(--r-m); transition: background var(--fast) var(--ease); }
+.row:hover { background: var(--raised); }
+.row .name { font-weight: var(--fw-strong); line-height: 1.3; }
+.row .sub { font-size: var(--fs-s); line-height: 1.35; color: var(--text-3); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.row .count { font-size: var(--fs-s); color: var(--text-2); }
+.upload { display: flex; gap: 6px; padding: 8px 8px 0; }
+.upload .key:first-child { flex: 1; }
+.side-foot { margin-top: auto; padding: 12px 14px; font-size: var(--fs-s); line-height: 1.45; color: var(--text-3); }
+
+/* Stage */
+.stage { position: relative; min-width: 0; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) var(--panel-w); grid-template-rows: var(--header-h) minmax(0, 1fr) auto; }
+.topbar { grid-column: 1; height: var(--header-h); display: flex; align-items: center; gap: 10px; padding: 0 12px; }
+.topbar .title { font-size: var(--fs-l); font-weight: var(--fw-strong); }
+.topbar .spacer { flex: 1; }
+.status { display: inline-flex; align-items: center; gap: 7px; height: 22px; padding: 0 9px; border-radius: 999px; font-size: var(--fs-s); color: var(--text-2); background: var(--well); box-shadow: var(--deboss); }
+/* Dock */
+.dock { grid-column: 1; grid-row: 3; display: flex; justify-content: center; padding: 12px 20px 16px; }
+.controls { display: flex; align-items: center; gap: 2px; padding: 3px; border-radius: 11px; background: var(--surface); box-shadow: var(--emboss-float); }
+/* Pressed view button in the dock: same recessed look as the active rail item (flat keys otherwise drop their shadow) */
+.controls .key.flat[aria-pressed="true"] { color: var(--text); background: var(--well); box-shadow: var(--deboss-even); }
+
+.app { display: grid; grid-template-columns: var(--rail-w) var(--side-w) 1fr; height: 100vh; overflow: hidden; }
+
+@media (max-width: 1180px) { :root { --side-w: 228px; --panel-w: 292px; } }
+@media (max-width: 980px) { .app { grid-template-columns: var(--rail-w) 1fr; } .side { display: none; } }
+@media (max-width: 720px) {
+  body { overflow: auto; }
+  :root { --lane-head: 88px; }
+  .app { grid-template-columns: 1fr; height: auto; }
+  .rail { display: none; }
+  .stage { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; }
+  .topbar { grid-column: 1; height: auto; padding: 10px 16px; flex-wrap: wrap; }
+  .timeline { padding: 12px 16px 0; }
+  .goal { flex-direction: column; align-items: flex-start; }
+  .lane-head .sub { display: none; }
+  .dock { padding: 12px 16px; }
+  .panel { grid-column: 1; grid-row: 4; max-height: 520px; margin: 0 var(--inset) var(--inset); }
+  .topbar { grid-row: 1; }
+  .feed { flex: none; height: 280px; }
+}

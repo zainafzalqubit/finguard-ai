@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- FinGuard favicon: light embossed tile, dark shield, ledger-line F -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f4f4f4"/>
+      <stop offset="1" stop-color="#dadada"/>
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="8" fill="url(#tile)"/>
+  <g transform="translate(4 4)">
+    <path d="M12 2.5 19.4 5.1Q20 5.3 20 5.9V11.5C20 16.4 16.6 19.9 12 21.8 7.4 19.9 4 16.4 4 11.5V5.9Q4 5.3 4.6 5.1Z" fill="#141414"/>
+    <path d="M15 7.6H9.6V16.4M9.6 11.8H13.6" fill="none" stroke="#f4f4f4" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
