@@ -31,10 +31,10 @@
 .files li { animation: row-in 0.3s var(--ease) both; animation-delay: calc(min(var(--i, 0), 12) * 30ms); }
 @keyframes row-in { from { opacity: 0; transform: translateY(4px); } }
 
-/* Hover: the cards inside rise a little, one after another; the card under the pointer rises most and straightens.
+/* Hover: the cards inside rise a little, one after another; the card under the pointer rises most, keeping its place in the stack.
    Uses translate/rotate, which stack on top of each card's resting transform. */
 .drop[data-state="filled"]:hover .folder-doc[data-in] { translate: 0 -4px; }
-.drop[data-state="filled"] .folder-doc[data-in]:hover { z-index: 2; translate: 0 -10px; rotate: calc(var(--i) * -3deg); transition-delay: 0s; }
+.drop[data-state="filled"] .folder-doc[data-in]:hover { translate: 0 -9px; transition-delay: 0s; }
 .drop[data-state="filled"]:hover .folder-check { scale: 1.06; }
 .folder-check { transition: scale 0.25s var(--spring); }
 
