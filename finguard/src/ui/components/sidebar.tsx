@@ -51,7 +51,7 @@ export function Sidebar({ view, onUpload, onSample }: SidebarProps): ReactElemen
         })}
       </section>
 
-      <div className="side-foot">{view.model ? `Model: ${view.model}` : "Sample data is synthetic. Every vendor and account is made up."}</div>
+      <div className="side-foot">{view.model ?? "Sample data is synthetic. Every vendor and account is made up."}</div>
     </aside>
   );
 }

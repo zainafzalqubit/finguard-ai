@@ -1,4 +1,4 @@
-import { agentTeam, selectedModel } from "@/agents/module";
+import { agentRuntime } from "@/agents/module";
 import { GOALS } from "@/agents/prompts";
 import { runAgentTask } from "@/agents/run-agent";
 import { runContext } from "@/agents/run-context";
@@ -18,12 +18,12 @@ export async function runAudit(runId: string, input: AuditInput): Promise<void> 
 
   await runContext.run({ runId, state, emit: send }, async () => {
     try {
-      const team = await agentTeam();
-      const model = selectedModel();
+      const { team, model: setup } = await agentRuntime();
+      const model = setup.name;
       const task = (agentId: keyof typeof team, documentId: string | null, label: string, goal: string): AgentTask =>
         ({ agent: team[agentId], agentId, documentId, label, goal, model });
 
-      send({ type: "run.started", model, counts: input.counts });
+      send({ type: "run.started", model: setup.label, counts: input.counts });
       const checks: Promise<boolean>[] = [];
       for (const doc of input.documents) {
         await runAgentTask(task("ledger", doc.documentId, doc.documentId, GOALS.read(doc.documentId, doc.text)));

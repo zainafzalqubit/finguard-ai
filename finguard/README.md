@@ -20,7 +20,10 @@ Open http://localhost:3000, click **New audit**, then **Use sample data**, then 
 Or open http://localhost:3000/?audit=sample to start the sample audit straight away.
 
 It runs offline by default with a built-in model.
-To use a real model, copy `.env.example` to `.env.local` and set `ANTHROPIC_API_KEY`.
+To use a real model, copy `.env.example` to `.env.local`, set one key, then restart `pnpm dev`:
+
+- `OPENROUTER_API_KEY`: any provider through OpenRouter (default `anthropic/claude-haiku-5.5`; pick another with `FINGUARD_MODEL`)
+- `ANTHROPIC_API_KEY`: Claude directly (default `claude-haiku-4-5`)
 
 ## How it works
 
