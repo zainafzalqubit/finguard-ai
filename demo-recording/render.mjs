@@ -1,13 +1,14 @@
 // Turns frames/ + timeline.json into output/finguard-demo.mp4: 1080p60, eased camera zooms,
 // captions, the sped-up stretch with a badge, and fades in and out.
 import { spawnSync } from "node:child_process";
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { join, resolve } from "node:path";
 
 import ffmpeg from "ffmpeg-static";
 
 import { renderCaptions } from "./lib/captions.mjs";
 import { cameraExpressions } from "./lib/camera.mjs";
+import { loadTimeline } from "./lib/timeline.mjs";
 
 const APP = process.env.FINGUARD_URL ?? "http://localhost:3000/";
 const FRAMES = resolve("frames");
@@ -18,21 +19,9 @@ const FPS = 60;
 const FADE = 0.35;
 
 mkdirSync(OUT, { recursive: true });
-const { view, frames, marks } = JSON.parse(readFileSync(join(FRAMES, "timeline.json"), "utf8"));
-const t0 = frames[0].t;
-const endMark = marks.find((m) => m.type === "end");
-
-// Sped-up stretches, on the recording clock
-const speeds = [];
-for (const m of marks.filter((m) => m.type === "speed")) {
-  const end = marks.find((e) => e.type === "speedEnd" && e.t > m.t);
-  speeds.push({ from: m.t, to: end?.t ?? Infinity, factor: m.factor });
-}
-/** Recording clock -> video clock (seconds from the first frame). */
-const out = (t) => speeds.reduce((acc, s) => acc - Math.max(0, Math.min(t, s.to) - s.from) * (1 - 1 / s.factor), t - t0);
+const { view, frames, marks, speeds, out, lastT } = loadTimeline(FRAMES);
 
 // 1. Frames with their on-screen durations (variable rate in, constant 60 fps out)
-const lastT = endMark ? endMark.t + 0.6 : frames.at(-1).t;
 const used = frames.filter((f) => f.t <= lastT);
 const lines = ["ffconcat version 1.0"];
 used.forEach((f, i) => {
