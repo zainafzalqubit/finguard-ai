@@ -1,0 +1,24 @@
+# One-click deploy on Render (free plan): Dashboard > New > Blueprint > pick this repo.
+# FinGuard needs an always-on Node server: audits keep running after the request returns,
+# the dashboard streams events for minutes, and runs are kept in memory and SQLite.
+services:
+  - type: web
+    name: finguard-ai
+    runtime: node
+    plan: free
+    branch: main
+    rootDir: finguard
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm run build
+    startCommand: pnpm start
+    healthCheckPath: /api/models
+    envVars:
+      # node:sqlite and the app need Node 24 or newer.
+      - key: NODE_VERSION
+        value: "24"
+      # Paste your free Gemini key in the Render dashboard when asked (never commit it).
+      - key: GEMINI_API_KEY
+        sync: false
+      # Visitors start in Demo mode, so a public link cannot use up the Gemini free quota;
+      # Gemini stays one click away in the New audit dialog. Set to "gemini" to make it the default.
+      - key: FINGUARD_PROVIDER
+        value: offline
