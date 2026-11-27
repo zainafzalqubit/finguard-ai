@@ -17,3 +17,6 @@ coverage/
 Thumbs.db
 .vscode/
 .idea/
+
+# Submission drafts (pasted into the hackathon form, not part of the repo)
+/submission/

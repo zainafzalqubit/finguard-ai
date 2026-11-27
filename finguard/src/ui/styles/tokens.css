@@ -1,0 +1,89 @@
+/* Ported from design/dashboard.html (approved). Keep in sync with DESIGN.md. */
+/* Tokens: single source of truth, later moved to tokens.css + DESIGN.md */
+:root {
+  /* Neutral gray surfaces, darkest to lightest */
+  --well: #0c0c0c;
+  --window: #101010;
+  --surface: #151515;
+  --raised: #1e1e1e;
+  --raised-hi: #262626;
+  --raised-top: #2d2d2d;
+  --led-off: #3d3d3d;
+  --divider: rgba(255, 255, 255, 0.06);
+
+  --text: #ececec;
+  --text-2: #a6a6a6;
+  --text-3: #888888;
+
+  --white: #ffffff;
+  --cream: #f4f4f4;
+  --cream-lo: #dadada;
+  --ink: #141414;
+
+  --ok: #8fcaa0;
+  --high: #e9806e;
+  --medium: #e3b25a;
+
+  --a-ledger: #d9bd8f;
+  --a-tally: #a7b8e0;
+  --a-sentinel: #b8a6d9;
+  --a-engine: #8c8c8c;
+
+  /* File kind colours (upload folder cards), reusing the palette above */
+  --k-invoices: var(--high);
+  --k-pos: var(--a-tally);
+  --k-payments: var(--ok);
+  --k-vendors: var(--a-sentinel);
+
+  /* Radius scale: inner radius = outer radius - padding, so nested shapes stay concentric */
+  --r-l: 12px;
+  --r-m: 8px;
+  --r-s: 6px;
+  --r-xs: 4px;
+
+  /* Emboss system: light from above. Raised = lit top + shaded base. Recessed = shaded top + lit lip. */
+  --hairline: 0 0 0 0.5px rgba(0, 0, 0, 0.7);
+  --emboss: inset 0 1px 0 rgba(255, 255, 255, 0.075), inset 0 -1px 0 rgba(0, 0, 0, 0.25), var(--hairline), 0 1px 1.5px rgba(0, 0, 0, 0.45);
+  --emboss-soft: inset 0 1px 0 rgba(255, 255, 255, 0.05), var(--hairline), 0 8px 20px -10px rgba(0, 0, 0, 0.65);
+  --emboss-float: inset 0 1px 0 rgba(255, 255, 255, 0.06), var(--hairline), 0 2px 4px rgba(0, 0, 0, 0.35), 0 18px 40px -18px rgba(0, 0, 0, 0.8);
+  --deboss: inset 0 1px 1.5px rgba(0, 0, 0, 0.55), inset 0 0 0 0.5px rgba(0, 0, 0, 0.45), 0 1px 0 rgba(255, 255, 255, 0.045);
+  --deboss-even: inset 0 0 0 0.5px rgba(0, 0, 0, 0.55), inset 0 0 2px rgba(0, 0, 0, 0.45);
+  /* Raised part that sits inside a recess: no outer drop shadow, so the gap below it stays as clear as the gap above */
+  --emboss-inset: inset 0 1px 0 rgba(255, 255, 255, 0.075), inset 0 -1px 0 rgba(0, 0, 0, 0.2), var(--hairline);
+  --grad-raised: linear-gradient(180deg, var(--raised-hi), var(--raised));
+  --grad-raised-hover: linear-gradient(180deg, var(--raised-top), var(--raised-hi));
+  --grad-light: linear-gradient(180deg, var(--cream), var(--cream-lo));
+  --emboss-light: inset 0 1px 0 var(--white), inset 0 -1px 0 rgba(0, 0, 0, 0.12), var(--hairline), 0 1px 2px rgba(0, 0, 0, 0.45);
+
+  --font: var(--font-inter), system-ui, sans-serif;
+  /* Tailwind tracking-tight for body, tracking-tighter for headings */
+  --tracking: -0.025em;
+  --tracking-heading: -0.05em;
+  /* Bold text stays at regular weight by design */
+  --fw-strong: 400;
+  /* Headings and titles: a touch heavier than body so the page has a clear top level */
+  --fw-heading: 600;
+  --fs-s: 13px;
+  --fs-m: 13.5px;
+  --fs-l: 15px;
+  --fs-xl: 17px;
+
+  --ctl-h: 28px;
+  --ctl-h-s: 24px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --fast: 0.12s;
+  /* Slight overshoot for things that land: cards, checks */
+  --spring: cubic-bezier(0.34, 1.4, 0.5, 1);
+
+  --rail-w: 52px;
+  --side-w: 248px;
+  --panel-w: 316px;
+  --header-h: 52px;
+  --inset: 8px;
+  --r-card: 14px;
+  --lane-head: 156px;
+  --lane-gap: 14px;
+  --lane-h: 46px;
+  --track-x: calc(var(--lane-head) + var(--lane-gap));
+  --fade: linear-gradient(90deg, transparent 0, #000 48px, #000 calc(100% - 20px), transparent);
+}
