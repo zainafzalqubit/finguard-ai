@@ -311,17 +311,17 @@ Checkpoint 21:00: if agents are not working end to end, drop the optional items.
 - [x] Mozaik read and verified against the real package
 - [x] Concurrency, shared state and events spike
 - [x] Dashboard, upload dialog, logo and favicon
-- [ ] Spike run with a real model
-- [ ] Mozaik version decided
-- [ ] Sample data for 7 tests
-- [ ] PDF and CSV parsing test
-- [ ] DESIGN.md + tokens.css
-- [ ] Architecture frozen
-- [ ] Registration and rules verified
-- [ ] Ingestion built
-- [ ] Rules engine + tests
-- [ ] Agents implemented
-- [ ] SSE + dashboard integrated
-- [ ] 7 tests pass end to end
-- [ ] README + demo video
+- [x] Spike run with a real model
+- [x] Mozaik version decided: 5.0.1 (works end to end; recheck if the brief requires 4.2.0)
+- [x] Sample data for 7 tests
+- [x] PDF and CSV parsing test
+- [x] tokens.css (design tokens live in `finguard/src/ui/styles/tokens.css`; no separate DESIGN.md)
+- [x] Architecture frozen
+- [ ] Registration and rules verified (registered on 27 Nov; confirm the email and read the submission rules)
+- [x] Ingestion built
+- [x] Rules engine + tests
+- [x] Agents implemented
+- [x] SSE + dashboard integrated
+- [x] 7 tests pass end to end
+- [x] README + demo video
 - [ ] Submitted
