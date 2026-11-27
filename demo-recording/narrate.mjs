@@ -7,6 +7,7 @@ import { join, resolve } from "node:path";
 
 import ffmpeg from "ffmpeg-static";
 
+import { loadTimeline } from "./lib/timeline.mjs";
 import { VOICES } from "./lib/voices.mjs";
 
 const OUT = resolve("output");
@@ -20,21 +21,21 @@ const SCRIPT = [
   { caption: "Drop in invoice PDFs", text: "Start a new audit, and drop in the invoice PDFs, purchase orders, payments, and the vendor list." },
   { caption: "FinGuard sorts every file", text: "FinGuard sorts every file by type. Then pick a model, and start." },
   { caption: "Ledger reads each invoice", text: "Three agents work at the same time. Ledger reads each invoice. As soon as it is saved, Tally matches it to the purchase order and payments, and Sentinel checks for duplicates and changed bank details." },
-  { caption: "Findings arrive", text: "Every finding is decided by a coded rule, not by the AI. Here, the bank account on the invoice does not match the vendor list." },
+  { caption: "Findings arrive", text: "Findings arrive as the agents work, and each one is decided by a coded rule, not by the AI. On the free Gemini tier this takes a few minutes, so it plays eight times faster." },
+  { caption: "Every finding shows", text: "Here, the bank account on the invoice does not match the vendor list, and you see both values side by side." },
   { caption: "Open the exact invoice", text: "You can open the exact invoice the agent read, and check it yourself." },
   { caption: "Invoices that pass", text: "Clean invoices are listed too." },
   { caption: "Every audit is saved", text: "And every audit is saved on your computer, so you can replay it any time." },
   { mark: "captionEnd", text: "AI reads and explains. Code decides." },
 ];
 
-const { frames, marks } = JSON.parse(readFileSync(resolve("frames/timeline.json"), "utf8"));
-const t0 = frames[0].t;
-const videoEnd = marks.find((m) => m.type === "end").t - t0 + 0.6;
+const { marks, out, lastT } = loadTimeline(resolve("frames"));
+const videoEnd = out(lastT);
 const startOf = (line) => {
   if (line.at !== undefined) return line.at;
   const m = marks.find((x) => (line.mark ? x.type === line.mark : x.type === "caption" && x.text.startsWith(line.caption)));
   if (!m) throw new Error(`No scene for: ${line.text}`);
-  return m.t - t0 + 0.3;
+  return out(m.t) + 0.3;
 };
 
 const run = (args) => {
